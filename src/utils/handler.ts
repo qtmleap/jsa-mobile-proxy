@@ -38,7 +38,14 @@ const update = async (env: Bindings, _ctx: ExecutionContext) => {
       game_id: game.game_id.toString()
     }))
   )
-  await Promise.all(buffers.map((buffer) => env.BUCKET.put(`bin/${buffer.game_id}.bin`, buffer.buffer)))
+  await Promise.all(
+    buffers.map((buffer) => env.BUCKET.put(`bin/${buffer.game_id}.bin`, buffer.buffer), {
+      httpMetadata: {
+        contentType: 'application/octet-stream',
+        contentDisposition: 'attachment'
+      }
+    })
+  )
   const records: RecordType[] = buffers
     .map((buffer) => {
       const record: Record | Error = importJSA(buffer.buffer)
@@ -52,7 +59,16 @@ const update = async (env: Bindings, _ctx: ExecutionContext) => {
     })
     .filter((record): record is RecordType => record !== undefined)
   await Promise.all(records.map((record) => env.KV.put(record.game_id, exportJKFString(record.data))))
-  await Promise.all(records.map((record) => env.BUCKET.put(`kif/${record.game_id}.kif`, exportKIF(record.data))))
+  await Promise.all(
+    records.map((record) =>
+      env.BUCKET.put(`kif/${record.game_id}.kif`, exportKIF(record.data), {
+        httpMetadata: {
+          contentType: 'text/plain; charset=utf-8',
+          contentDisposition: 'attachment'
+        }
+      })
+    )
+  )
   console.debug(`Updated ${records.length} records`)
 }
 
