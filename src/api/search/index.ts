@@ -5,7 +5,6 @@ import { exportJKF, type Record } from 'tsshogi'
 import { z } from 'zod'
 import { SearchListRequestSchema, SearchListResponseSchema } from '@/models/search.dto'
 import type { Bindings } from '@/utils/bindings'
-import scheduled from '@/utils/handler'
 
 const app = new OpenAPIHono<{ Bindings: Bindings }>()
 
