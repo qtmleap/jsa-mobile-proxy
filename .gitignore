@@ -219,4 +219,6 @@ $RECYCLE.BIN/
 
 # Cloudflare/Wrangler
 .dev.vars
+.dev.vars.*
+!.dev.vars.example
 .wrangler/
