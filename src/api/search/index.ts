@@ -7,8 +7,6 @@ import { SearchListRequestSchema, SearchListResponseSchema } from '@/models/sear
 import type { Bindings } from '@/utils/bindings'
 import scheduled from '@/utils/handler'
 
-// import { scheduled } from '@/utils/handler'
-
 const app = new OpenAPIHono<{ Bindings: Bindings }>()
 
 app.openapi(
@@ -96,7 +94,5 @@ app.openapi(
     return c.json(exportJKF(record), 200)
   }
 )
-
-app.scheduled = scheduled
 
 export default app
