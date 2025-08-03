@@ -1,0 +1,29 @@
+name = "jsa-mobile-proxy"
+compatibility_date = "2025-05-05"
+send_metrics = true
+compatibility_flags = ["nodejs_compat_v2"]
+workers_dev = false
+minify = false
+logpush = true
+
+[observability]
+enabled = true
+head_sampling_rate = 0.1
+
+## JKF形式の棋譜データをKVに保存する
+[[kv_namespaces]]
+binding = "KV"
+id = "88c586c849b0403cb2fdda3cb107b2f1"
+
+## BIN形式の棋譜データをR2に保存する
+[[r2_buckets]]
+binding = "BUCKET"
+bucket_name = "jsa-mobile"
+
+[triggers]
+crons = ['*/5 * * * *']
+
+[dev]
+ip = "0.0.0.0"
+port = 28787
+local_protocol = "http"
