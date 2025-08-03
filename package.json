@@ -13,7 +13,7 @@
   "scripts": {
     "dev": "wrangler dev src/index.ts --test-scheduled",
     "remote": "wrangler dev src/index.ts --test-scheduled --remote",
-    "deploy": "wrangler deploy --minify src/index.ts",
+    "deploy": "wrangler deploy --minify src/index.ts --keep-vars",
     "prepare": "husky"
   },
   "devDependencies": {
