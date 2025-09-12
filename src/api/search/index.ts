@@ -32,7 +32,7 @@ app.openapi(
   }),
   async (c) => {
     const { p1, p2, p3 } = c.req.valid('query')
-    const buffer = await c.env.client.get('/api/index.php', {
+    const buffer = await c.env.CLIENT.get('/api/index.php', {
       queries: {
         // @ts-ignore
         action: 'search',
@@ -58,9 +58,7 @@ app.openapi(
     description: 'Search',
     request: {
       params: z.object({
-        game_id: z.coerce.number().int().default(100).openapi({
-          example: 100
-        })
+        game_id: z.coerce.number().int().default(100)
       })
     },
     responses: {
@@ -68,9 +66,7 @@ app.openapi(
         content: {
           'application/json': {
             // 型の付け方が良くない
-            schema: z.object({}).openapi({
-              description: 'JKF形式の棋譜データ'
-            })
+            schema: z.object({})
           }
         },
         description: 'JKF形式の棋譜データ'
@@ -79,7 +75,7 @@ app.openapi(
   }),
   async (c) => {
     const { game_id } = c.req.valid('param')
-    const buffer = await c.env.client.get('/api/index.php', {
+    const buffer = await c.env.CLIENT.get('/api/index.php', {
       queries: {
         // @ts-ignore
         action: 'shogi' as const,

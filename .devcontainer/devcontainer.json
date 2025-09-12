@@ -35,6 +35,7 @@
         "GitHub.copilot",
         "GitHub.copilot-chat",
         "PKief.material-icon-theme",
+        "Prisma.prisma",
         "antfu.file-nesting",
         "bierner.markdown-mermaid",
         "bierner.markdown-preview-github-styles",
@@ -42,7 +43,7 @@
         "eamodio.gitlens",
         "ms-vscode.vscode-typescript-next",
         "tamasfe.even-better-toml",
-        "vsls-contrib.gitdoc"
+        "vsls-contrib.gitdoc",
       ],
       "settings": {
         "betterTypeScriptErrors.prettify": true,

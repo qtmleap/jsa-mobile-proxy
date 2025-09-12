@@ -1,10 +1,13 @@
+import type { PrismaClient } from '@prisma/client'
 import type { ZodiosInstance } from '@zodios/core'
 import type { JSAMobileEndpoint } from './client'
 
-export type Bindings = {
-  USERNAME: string
-  PASSWORD: string
+export interface Env {
+  JSA_MOBILE_USERNAME: string
+  JSA_MOBILE_PASSWORD: string
   BUCKET: R2Bucket
   KV: KVNamespace
-  client: ZodiosInstance<JSAMobileEndpoint>
+  DB: D1Database
+  PRISMA: PrismaClient
+  CLIENT: ZodiosInstance<JSAMobileEndpoint>
 }
