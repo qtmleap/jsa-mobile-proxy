@@ -15,19 +15,21 @@ datasource db {
 
 // Game
 model Game {
-  id        Int      @id
+  id        Int       @id
   moves     Int
   title     String
-  blackTime Int?     @map("black_time")
-  whiteTime Int?     @map("white_time")
+  blackTime Int?      @map("black_time")
+  whiteTime Int?      @map("white_time")
   location  String?
   kif       String?
-  startTime DateTime @map("start_time")
-  endTime   DateTime @map("end_time")
-  blackId   String?  @map("black_id")
-  whiteId   String?  @map("white_id")
-  black     Player?  @relation("black_games", fields: [blackId], references: [id], onDelete: Cascade)
-  white     Player?  @relation("white_games", fields: [whiteId], references: [id], onDelete: Cascade)
+  date      String
+  timeLimit Int       @map("time_limit")
+  startTime DateTime  @map("start_time")
+  endTime   DateTime? @map("end_time")
+  blackId   String?   @map("black_id")
+  whiteId   String?   @map("white_id")
+  black     Player?   @relation("black_games", fields: [blackId], references: [id], onDelete: Cascade)
+  white     Player?   @relation("white_games", fields: [whiteId], references: [id], onDelete: Cascade)
   tags      Tag[]
 
   @@index([title])
@@ -37,7 +39,7 @@ model Game {
 // Tag
 model Tag {
   id   String @id @default(cuid())
-  name String
+  name String @unique
 
   games Game[]
 
@@ -47,7 +49,7 @@ model Tag {
 // Player
 model Player {
   id   String @id @default(cuid())
-  name String
+  name String @unique
 
   blackGames Game[] @relation("black_games")
   whiteGames Game[] @relation("white_games")

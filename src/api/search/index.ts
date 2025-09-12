@@ -4,9 +4,9 @@ import { HTTPException } from 'hono/http-exception'
 import { exportJKF, type Record } from 'tsshogi'
 import { z } from 'zod'
 import { SearchListRequestSchema, SearchListResponseSchema } from '@/models/search.dto'
-import type { Bindings } from '@/utils/bindings'
+import type { Env } from '@/utils/bindings'
 
-const app = new OpenAPIHono<{ Bindings: Bindings }>()
+const app = new OpenAPIHono<{ Bindings: Env }>()
 
 app.openapi(
   createRoute({

@@ -7,8 +7,10 @@ CREATE TABLE "games" (
     "white_time" INTEGER,
     "location" TEXT,
     "kif" TEXT,
+    "date" TEXT NOT NULL,
+    "time_limit" INTEGER NOT NULL,
     "start_time" DATETIME NOT NULL,
-    "end_time" DATETIME NOT NULL,
+    "end_time" DATETIME,
     "black_id" TEXT,
     "white_id" TEXT,
     CONSTRAINT "games_black_id_fkey" FOREIGN KEY ("black_id") REFERENCES "players" ("id") ON DELETE CASCADE ON UPDATE CASCADE,
@@ -37,6 +39,12 @@ CREATE TABLE "_GameToTag" (
 
 -- CreateIndex
 CREATE INDEX "games_title_idx" ON "games"("title");
+
+-- CreateIndex
+CREATE UNIQUE INDEX "tags_name_key" ON "tags"("name");
+
+-- CreateIndex
+CREATE UNIQUE INDEX "players_name_key" ON "players"("name");
 
 -- CreateIndex
 CREATE UNIQUE INDEX "_GameToTag_AB_unique" ON "_GameToTag"("A", "B");

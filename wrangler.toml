@@ -1,5 +1,5 @@
 name = "jsa-mobile-proxy"
-compatibility_date = "2025-05-05"
+compatibility_date = "2025-09-06"
 send_metrics = true
 compatibility_flags = ["nodejs_compat_v2"]
 workers_dev = false
@@ -20,7 +20,6 @@ id = "88c586c849b0403cb2fdda3cb107b2f1"
 binding = "BUCKET"
 bucket_name = "jsa-mobile"
 
-
 ## D1に棋譜データを保存する
 [[d1_databases]]
 binding = "DB"
@@ -30,27 +29,6 @@ migrations_dir = "prisma/migrations"
 
 [triggers]
 crons = ['*/5 * * * *']
-
-## Staging環境用の設定
-[env.staging]
-name = "jsa-mobile-proxy-staging"
-vars = { ENVIRONMENT = "staging" }
-
-## ステージング用KV
-[[env.staging.kv_namespaces]]
-binding = "KV"
-id = "d046d203ee5b4b41878e85de53303078"
-
-## ステージング用R2
-[[env.staging.r2_buckets]]
-binding = "BUCKET"
-bucket_name = "jsa-mobile-staging"
-
-## ステージング用D1
-[[env.staging.d1_databases]]
-binding = "DB"
-database_name = "jsamobile_staging"
-database_id = "0bffd1ee-6626-46e4-91cd-c9e5dcc1119f"
 
 [dev]
 ip = "0.0.0.0"
