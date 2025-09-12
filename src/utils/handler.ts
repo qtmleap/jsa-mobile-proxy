@@ -1,7 +1,7 @@
 import { decodeGameList, importJSA } from '@mito-shogi/tsshogi-jsa'
 import { exportJKFString, exportKIF, type Record } from 'tsshogi'
-import type { Bindings } from './bindings'
-import { createClient } from './client'
+import type { Env } from './bindings'
+import { upsertGame } from './prisma'
 
 type GameBuffer = {
   buffer: Buffer
@@ -13,10 +13,9 @@ type RecordType = {
   game_id: string
 }
 
-const update = async (env: Bindings, _ctx: ExecutionContext) => {
-  const client = createClient(env)
+const update = async (env: Env, _ctx: ExecutionContext) => {
   const { games } = decodeGameList(
-    await client.get('/api/index.php', {
+    await env.CLIENT.get('/api/index.php', {
       queries: {
         // @ts-ignore
         action: 'search',
@@ -28,7 +27,7 @@ const update = async (env: Bindings, _ctx: ExecutionContext) => {
   )
   const buffers: GameBuffer[] = await Promise.all(
     games.map(async (game) => ({
-      buffer: await client.get(`/api/index.php`, {
+      buffer: await env.CLIENT.get(`/api/index.php`, {
         queries: {
           // @ts-ignore
           action: 'shogi',
@@ -38,6 +37,7 @@ const update = async (env: Bindings, _ctx: ExecutionContext) => {
       game_id: game.game_id.toString()
     }))
   )
+  // バイナリ保存
   await Promise.all(
     buffers.map((buffer) => env.BUCKET.put(`bin/${buffer.game_id}.bin`, buffer.buffer), {
       httpMetadata: {
@@ -58,7 +58,11 @@ const update = async (env: Bindings, _ctx: ExecutionContext) => {
       }
     })
     .filter((record): record is RecordType => record !== undefined)
+  // D1に棋譜データ保存
+  await Promise.all(records.map(async (record) => upsertGame(env, record.data, record.game_id)))
+  // KVに棋譜データ保存
   await Promise.all(records.map((record) => env.KV.put(record.game_id, exportJKFString(record.data))))
+  // R2に棋譜データ保存
   await Promise.all(
     records.map((record) =>
       env.BUCKET.put(`kif/${record.game_id}.kif`, exportKIF(record.data), {
@@ -80,7 +84,7 @@ const scheduled: ExportedHandlerScheduledHandler = async (
   console.log(`Scheduled event received: ${event.cron}`)
   switch (event.cron) {
     case '*/5 * * * *':
-      ctx.waitUntil(update(env as Bindings, ctx))
+      ctx.waitUntil(update(env as Env, ctx))
       break
     default:
       break
