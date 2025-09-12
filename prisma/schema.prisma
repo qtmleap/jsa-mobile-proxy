@@ -1,0 +1,56 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+// Game
+model Game {
+  id        Int      @id
+  moves     Int
+  title     String
+  blackTime Int?     @map("black_time")
+  whiteTime Int?     @map("white_time")
+  location  String?
+  kif       String?
+  startTime DateTime @map("start_time")
+  endTime   DateTime @map("end_time")
+  blackId   String?  @map("black_id")
+  whiteId   String?  @map("white_id")
+  black     Player?  @relation("black_games", fields: [blackId], references: [id], onDelete: Cascade)
+  white     Player?  @relation("white_games", fields: [whiteId], references: [id], onDelete: Cascade)
+  tags      Tag[]
+
+  @@index([title])
+  @@map("games")
+}
+
+// Tag
+model Tag {
+  id   String @id @default(cuid())
+  name String
+
+  games Game[]
+
+  @@map("tags")
+}
+
+// Player
+model Player {
+  id   String @id @default(cuid())
+  name String
+
+  blackGames Game[] @relation("black_games")
+  whiteGames Game[] @relation("white_games")
+
+  @@map("players")
+}

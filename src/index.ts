@@ -1,4 +1,6 @@
 import { OpenAPIHono as Hono } from '@hono/zod-openapi'
+import { PrismaD1 } from '@prisma/adapter-d1'
+import { PrismaClient } from '@prisma/client/extension'
 import { Scalar } from '@scalar/hono-api-reference'
 import dayjs from 'dayjs'
 import isToday from 'dayjs/plugin/isToday'
@@ -27,7 +29,9 @@ app.doc31('/openapi.json', specification)
 app.get('/docs', Scalar(reference))
 app.notFound((c) => c.redirect('/docs'))
 app.use('*', async (c: Context<{ Bindings: Bindings }>, next) => {
-  c.env.client = createClient(c.env)
+  const adapter = new PrismaD1(c.env.DB)
+  c.env.PRISMA = new PrismaClient({ adapter })
+  c.env.CLIENT = createClient(c.env)
   await next()
 })
 app.use('*', timeout(5000))
