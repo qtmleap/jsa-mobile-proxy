@@ -11,7 +11,6 @@ import { logger } from 'hono/logger'
 import { timeout } from 'hono/timeout'
 import search from './api/search'
 import type { Env } from './utils/bindings'
-import scheduled from './utils/handler'
 import { reference, specification } from './utils/openapi'
 
 dayjs.extend(utc)
@@ -46,6 +45,6 @@ app.notFound((c) => c.redirect('/docs'))
 
 export default {
   port: 28787,
-  fetch: app.fetch,
-  scheduled: scheduled
+  fetch: app.fetch
+  // scheduled: scheduled
 }
