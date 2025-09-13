@@ -2,7 +2,6 @@ import { createRoute, OpenAPIHono } from '@hono/zod-openapi'
 import { HTTPException } from 'hono/http-exception'
 import { ListSchema } from '@/models/common'
 import { GameSchema } from '@/models/game.dto'
-import { SearchListRequestSchema } from '@/models/search.dto'
 import type { Env } from '@/utils/bindings'
 
 const app = new OpenAPIHono<{ Bindings: Env }>()
@@ -15,7 +14,7 @@ app.openapi(
     summary: 'Search Game List',
     description: 'Search Game List',
     request: {
-      query: SearchListRequestSchema
+      // query: SearchListRequestSchema
     },
     responses: {
       200: {
