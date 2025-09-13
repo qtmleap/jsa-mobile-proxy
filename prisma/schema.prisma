@@ -28,8 +28,8 @@ model Game {
   endTime   DateTime? @map("end_time")
   blackId   String    @map("black_id")
   whiteId   String    @map("white_id")
-  blackRank String    @map("black_rank")
-  whiteRank String    @map("white_rank")
+  blackRank String?   @map("black_rank")
+  whiteRank String?   @map("white_rank")
   black     Player    @relation("black_games", fields: [blackId], references: [name], onDelete: Cascade)
   white     Player    @relation("white_games", fields: [whiteId], references: [name], onDelete: Cascade)
   tags      Tag[]
