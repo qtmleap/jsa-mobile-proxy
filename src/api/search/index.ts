@@ -1,10 +1,11 @@
 import { createRoute, OpenAPIHono } from '@hono/zod-openapi'
-import { decodeGameList, importJSA } from '@mito-shogi/tsshogi-jsa'
+import { decodeGameList, decodeJSA, importJSA } from '@mito-shogi/tsshogi-jsa'
 import { HTTPException } from 'hono/http-exception'
 import { exportJKF, type Record } from 'tsshogi'
 import { z } from 'zod'
 import { SearchListRequestSchema, SearchListResponseSchema } from '@/models/search.dto'
 import type { Env } from '@/utils/bindings'
+import { upsertGameInfo } from '@/utils/prisma'
 
 const app = new OpenAPIHono<{ Bindings: Env }>()
 
@@ -78,7 +79,7 @@ app.openapi(
     const buffer = await c.env.CLIENT.get('/api/index.php', {
       queries: {
         // @ts-ignore
-        action: 'shogi' as const,
+        action: 'shogi',
         p1: game_id
       }
     })
@@ -86,6 +87,7 @@ app.openapi(
     if (record instanceof Error) {
       throw new HTTPException(400, { message: record.message })
     }
+    await upsertGameInfo(c.env, decodeJSA(buffer), record)
     return c.json(exportJKF(record), 200)
   }
 )

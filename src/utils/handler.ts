@@ -1,18 +1,12 @@
 import { decodeGameList } from '@mito-shogi/tsshogi-jsa'
 import { PrismaD1 } from '@prisma/adapter-d1'
 import { PrismaClient } from '@prisma/client'
-import type { Record } from 'tsshogi'
 import type { Env } from './bindings'
 import { createClient } from './client'
 import { upsertGame } from './prisma'
 
 type GameBuffer = {
   buffer: Buffer
-  game_id: string
-}
-
-type RecordType = {
-  data: Record
   game_id: string
 }
 
@@ -37,8 +31,11 @@ const update = async (env: Env, _ctx: ExecutionContext) => {
       }
     })
   )
-  console.log(`Fetched ${games.length} games`)
-  const results = await Promise.allSettled(games.map((game) => upsertGame(env, game)))
+  // D1にデータを保存
+  const results = await Promise.allSettled(
+    games.filter((game) => game.length === 0).map((game) => upsertGame(env, game))
+  )
+  console.log(`Updated ${results.length} games`)
   const failures = results.filter((result): result is PromiseRejectedResult => result.status === 'rejected')
   if (failures.length > 0) {
     console.error(`Failed to update ${failures.length} games`)
