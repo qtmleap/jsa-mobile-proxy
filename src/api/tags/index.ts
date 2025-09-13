@@ -1,4 +1,5 @@
 import { createRoute, OpenAPIHono } from '@hono/zod-openapi'
+import { cache } from 'hono/cache'
 import { HTTPException } from 'hono/http-exception'
 import { ListSchema } from '@/models/common'
 import { TagSchema } from '@/models/tag.dto'
@@ -11,6 +12,7 @@ app.openapi(
     method: 'get',
     path: '/',
     tags: ['Tags'],
+    middleware: [cache({ cacheName: 'tags', cacheControl: 'public, max-age=86400' })],
     summary: 'Search Tag List',
     description: 'Search Tag List',
     request: {

@@ -1,4 +1,5 @@
 import { createRoute, OpenAPIHono } from '@hono/zod-openapi'
+import { cache } from 'hono/cache'
 import { HTTPException } from 'hono/http-exception'
 import { ListSchema } from '@/models/common'
 import { PlayerSchema } from '@/models/player.dto'
@@ -11,6 +12,7 @@ app.openapi(
     method: 'get',
     path: '/',
     tags: ['Players'],
+    middleware: [cache({ cacheName: 'players', cacheControl: 'public, max-age=86400' })],
     summary: 'Search Player List',
     description: 'Search Player List',
     request: {
@@ -45,7 +47,7 @@ app.openapi(
       throw new HTTPException(500, { message: result.error.message })
     }
     return c.json(
-      result.data.sort((a, b) => b.count - a.count),
+      result.data.filter((result) => result.count > 5).sort((a, b) => b.count - a.count),
       200
     )
   }
