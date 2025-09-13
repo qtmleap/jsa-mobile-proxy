@@ -20,7 +20,6 @@ app.openapi(
       200: {
         content: {
           'application/json': {
-            // 型の付け方が良くない
             schema: ListSchema(GameSchema)
           }
         },
