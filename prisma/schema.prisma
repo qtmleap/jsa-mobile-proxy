@@ -28,8 +28,10 @@ model Game {
   endTime   DateTime? @map("end_time")
   blackId   String    @map("black_id")
   whiteId   String    @map("white_id")
-  black     Player    @relation("black_games", fields: [blackId], references: [id], onDelete: Cascade)
-  white     Player    @relation("white_games", fields: [whiteId], references: [id], onDelete: Cascade)
+  blackRank String    @map("black_rank")
+  whiteRank String    @map("white_rank")
+  black     Player    @relation("black_games", fields: [blackId], references: [name], onDelete: Cascade)
+  white     Player    @relation("white_games", fields: [whiteId], references: [name], onDelete: Cascade)
   tags      Tag[]
   createdAt DateTime  @default(now()) @map("created_at")
   updatedAt DateTime  @updatedAt @map("updated_at")
@@ -40,8 +42,7 @@ model Game {
 
 // Tag
 model Tag {
-  id        String   @id @default(cuid())
-  name      String   @unique
+  name      String   @id
   games     Game[]
   createdAt DateTime @default(now()) @map("created_at")
   updatedAt DateTime @updatedAt @map("updated_at")
@@ -51,8 +52,7 @@ model Tag {
 
 // Player
 model Player {
-  id   String @id @default(cuid())
-  name String @unique
+  name String @id
 
   blackGames Game[]   @relation("black_games")
   whiteGames Game[]   @relation("white_games")

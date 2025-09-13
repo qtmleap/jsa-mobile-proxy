@@ -2,7 +2,7 @@ name = "jsa-mobile-proxy"
 compatibility_date = "2025-09-06"
 send_metrics = true
 compatibility_flags = ["nodejs_compat_v2"]
-workers_dev = false
+workers_dev = true
 minify = false
 logpush = true
 
