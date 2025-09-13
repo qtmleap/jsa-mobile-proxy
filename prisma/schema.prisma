@@ -26,10 +26,10 @@ model Game {
   timeLimit Int       @map("time_limit")
   startTime DateTime  @map("start_time")
   endTime   DateTime? @map("end_time")
-  blackId   String?   @map("black_id")
-  whiteId   String?   @map("white_id")
-  black     Player?   @relation("black_games", fields: [blackId], references: [id], onDelete: Cascade)
-  white     Player?   @relation("white_games", fields: [whiteId], references: [id], onDelete: Cascade)
+  blackId   String    @map("black_id")
+  whiteId   String    @map("white_id")
+  black     Player    @relation("black_games", fields: [blackId], references: [id], onDelete: Cascade)
+  white     Player    @relation("white_games", fields: [whiteId], references: [id], onDelete: Cascade)
   tags      Tag[]
 
   @@index([title])

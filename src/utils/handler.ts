@@ -25,6 +25,7 @@ const update = async (env: Env, _ctx: ExecutionContext) => {
       }
     })
   )
+  console.debug(`Fetched ${games.length} games`)
   const buffers: GameBuffer[] = await Promise.all(
     games.map(async (game) => ({
       buffer: await env.CLIENT.get(`/api/index.php`, {
