@@ -1,4 +1,5 @@
 import { OpenAPIHono as Hono } from '@hono/zod-openapi'
+import { WorkersKVStore } from '@hono-rate-limiter/cloudflare'
 import { PrismaD1 } from '@prisma/adapter-d1'
 import { PrismaClient } from '@prisma/client'
 import { Scalar } from '@scalar/hono-api-reference'
@@ -58,7 +59,8 @@ app.use(
     limit: 100, // Limit each IP to 100 requests per `window` (here, per 15 minutes).
     standardHeaders: 'draft-7', // draft-6: `RateLimit-*` headers; draft-7: combined `RateLimit` header
     keyGenerator: (c) =>
-      c.req.header('x-forwarded-for') || c.req.header('CF-Connecting-IP') || c.req.header('X-Real-IP') || 'unknown' // Method to generate custom identifiers for clients.
+      c.req.header('x-forwarded-for') || c.req.header('CF-Connecting-IP') || c.req.header('X-Real-IP') || 'unknown', // Method to generate custom identifiers for clients.
+    store: new WorkersKVStore({ namespace: c.env.RATE_LIMITTER })
     // store: ... , // Redis, MemoryStore, etc. See below.
   })
 )
