@@ -13,9 +13,9 @@ app.openapi(
   createRoute({
     method: 'get',
     path: '/',
-    tags: ['Search'],
-    summary: 'Search KIF List',
-    description: 'Search',
+    tags: ['Games'],
+    summary: 'Search Game List',
+    description: 'Search Game List',
     request: {
       query: SearchListRequestSchema
     },
