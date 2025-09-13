@@ -11,8 +11,8 @@ CREATE TABLE "games" (
     "time_limit" INTEGER NOT NULL,
     "start_time" DATETIME NOT NULL,
     "end_time" DATETIME,
-    "black_id" TEXT,
-    "white_id" TEXT,
+    "black_id" TEXT NOT NULL,
+    "white_id" TEXT NOT NULL,
     CONSTRAINT "games_black_id_fkey" FOREIGN KEY ("black_id") REFERENCES "players" ("id") ON DELETE CASCADE ON UPDATE CASCADE,
     CONSTRAINT "games_white_id_fkey" FOREIGN KEY ("white_id") REFERENCES "players" ("id") ON DELETE CASCADE ON UPDATE CASCADE
 );
