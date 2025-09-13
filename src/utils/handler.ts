@@ -53,6 +53,7 @@ const update = async (env: Env, _ctx: ExecutionContext) => {
       if (record instanceof Error) {
         throw new Error(`Failed to import JSA for game ${buffer.game_id}: ${record.message}`)
       }
+      console.log(`Upserted game ${buffer.game_id}`)
       return upsertGameInfo(env, decodeJSA(buffer.buffer), record)
     })
   )
