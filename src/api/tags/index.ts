@@ -31,7 +31,14 @@ app.openapi(
     const result = ListSchema(TagSchema).safeParse(
       await c.env.PRISMA.tag.findMany({
         orderBy: { name: 'desc' },
-        take: 100
+        take: 100,
+        include: {
+          _count: {
+            select: {
+              games: true
+            }
+          }
+        }
       })
     )
     if (!result.success) {
