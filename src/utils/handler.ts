@@ -1,6 +1,9 @@
 import { decodeGameList, importJSA } from '@mito-shogi/tsshogi-jsa'
+import { PrismaD1 } from '@prisma/adapter-d1'
+import { PrismaClient } from '@prisma/client'
 import { exportJKFString, exportKIF, type Record } from 'tsshogi'
 import type { Env } from './bindings'
+import { createClient } from './client'
 import { upsertGame } from './prisma'
 
 type GameBuffer = {
@@ -14,6 +17,10 @@ type RecordType = {
 }
 
 const update = async (env: Env, _ctx: ExecutionContext) => {
+  const adapter = new PrismaD1(env.DB)
+  env.PRISMA = new PrismaClient({ adapter })
+  env.CLIENT = createClient(env)
+
   const { games } = decodeGameList(
     await env.CLIENT.get('/api/index.php', {
       queries: {
