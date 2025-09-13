@@ -11,7 +11,9 @@ import { compress } from 'hono/compress'
 import { cors } from 'hono/cors'
 import { csrf } from 'hono/csrf'
 import { logger } from 'hono/logger'
+import { secureHeaders } from 'hono/secure-headers'
 import { timeout } from 'hono/timeout'
+import { rateLimiter } from 'hono-rate-limiter'
 import games from './api/games'
 import players from './api/players'
 import search from './api/search'
@@ -41,6 +43,22 @@ app.use(
     origin: [],
     credentials: true,
     maxAge: 86400
+  })
+)
+app.use(
+  '*',
+  secureHeaders({
+    xFrameOptions: false,
+    xXssProtection: false
+  })
+)
+app.use(
+  rateLimiter({
+    windowMs: 15 * 60 * 1000, // 15 minutes
+    limit: 100, // Limit each IP to 100 requests per `window` (here, per 15 minutes).
+    standardHeaders: 'draft-7', // draft-6: `RateLimit-*` headers; draft-7: combined `RateLimit` header
+    keyGenerator: (_c) => '<unique_key>' // Method to generate custom identifiers for clients.
+    // store: ... , // Redis, MemoryStore, etc. See below.
   })
 )
 app.use(csrf())
