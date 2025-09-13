@@ -12,6 +12,7 @@ import { cors } from 'hono/cors'
 import { csrf } from 'hono/csrf'
 import { logger } from 'hono/logger'
 import { timeout } from 'hono/timeout'
+import games from './api/games'
 import search from './api/search'
 import type { Env } from './utils/bindings'
 import { createClient } from './utils/client'
@@ -44,6 +45,7 @@ app.use(csrf())
 app.use(logger())
 app.use(compress({ encoding: 'deflate' }))
 app.route('/api/search', search)
+app.route('/api/games', games)
 app.doc31('/openapi.json', specification)
 app.get('/docs', Scalar(reference))
 app.notFound((c) => c.redirect('/docs'))
