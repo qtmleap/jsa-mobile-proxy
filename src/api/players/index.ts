@@ -31,7 +31,6 @@ app.openapi(
     const result = ListSchema(PlayerSchema).safeParse(
       await c.env.PRISMA.player.findMany({
         orderBy: { name: 'desc' },
-        take: 100,
         include: {
           _count: {
             select: {
@@ -45,7 +44,10 @@ app.openapi(
     if (!result.success) {
       throw new HTTPException(500, { message: result.error.message })
     }
-    return c.json(result.data, 200)
+    return c.json(
+      result.data.sort((a, b) => b.count - a.count),
+      200
+    )
   }
 )
 
