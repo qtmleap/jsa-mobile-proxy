@@ -32,8 +32,8 @@ const update = async (env: Env, _ctx: ExecutionContext) => {
         // @ts-ignore
         action: 'search',
         p1: 0,
-        p2: 14000,
-        p3: 3
+        p2: 200,
+        p3: 2
       }
     })
   )
@@ -43,60 +43,30 @@ const update = async (env: Env, _ctx: ExecutionContext) => {
   if (failures.length > 0) {
     console.error(`Failed to update ${failures.length} games`)
   }
-  // console.log(`Fetched ${games.length} games`)
-  // const buffers: GameBuffer[] = await Promise.all(
-  //   games
-  //     .filter((game) => game.length !== 0)
-  //     .slice(0, 100)
-  //     .map(async (game) => ({
-  //       buffer: await env.CLIENT.get(`/api/index.php`, {
-  //         queries: {
-  //           // @ts-ignore
-  //           action: 'shogi',
-  //           p1: game.game_id
-  //         }
-  //       }),
-  //       game_id: game.game_id.toString()
-  //     }))
-  // )
-  // console.log(`Fetched ${games.length} -> ${buffers.length} games`)
-  // // R2にバイナリ保存
-  // await Promise.all(
-  //   buffers.map((buffer) => env.BUCKET.put(`bin/${buffer.game_id}.bin`, buffer.buffer), {
-  //     httpMetadata: {
-  //       contentType: 'application/octet-stream',
-  //       contentDisposition: 'attachment'
-  //     }
-  //   })
-  // )
-  // const records: RecordType[] = buffers
-  //   .map((buffer) => {
-  //     const record: Record | Error = importJSA(buffer.buffer)
-  //     if (record instanceof Error) {
-  //       return undefined
-  //     }
-  //     return {
-  //       data: record,
-  //       game_id: buffer.game_id
-  //     }
-  //   })
-  //   .filter((record): record is RecordType => record !== undefined)
-  // // D1に棋譜データ保存
-  // await Promise.all(records.map(async (record) => upsertGame(env, record.data, record.game_id)))
-  // // KVに棋譜データ保存
-  // await Promise.all(records.map((record) => env.KV.put(record.game_id, exportJKFString(record.data))))
-  // // R2に棋譜データ保存
-  // await Promise.all(
-  //   records.map((record) =>
-  //     env.BUCKET.put(`kif/${record.game_id}.kif`, exportKIF(record.data), {
-  //       httpMetadata: {
-  //         contentType: 'text/plain; charset=utf-8',
-  //         contentDisposition: 'attachment'
-  //       }
-  //     })
-  //   )
-  // )
-  // console.log(`Updated ${records.length} records`)
+  const buffers: GameBuffer[] = await Promise.all(
+    games
+      .filter((game) => game.length !== 0)
+      .slice(0, 100)
+      .map(async (game) => ({
+        buffer: await env.CLIENT.get(`/api/index.php`, {
+          queries: {
+            // @ts-ignore
+            action: 'shogi',
+            p1: game.game_id
+          }
+        }),
+        game_id: game.game_id.toString()
+      }))
+  )
+  // R2にバイナリ保存
+  await Promise.all(
+    buffers.map((buffer) => env.BUCKET.put(`bin/${buffer.game_id}.bin`, buffer.buffer), {
+      httpMetadata: {
+        contentType: 'application/octet-stream',
+        contentDisposition: 'attachment'
+      }
+    })
+  )
 }
 
 const scheduled: ExportedHandlerScheduledHandler = async (
@@ -106,7 +76,7 @@ const scheduled: ExportedHandlerScheduledHandler = async (
 ) => {
   console.log(`Scheduled event received: ${event.cron}`)
   switch (event.cron) {
-    case '*/5 * * * *':
+    case '*/1 * * * *':
       ctx.waitUntil(update(env as Env, ctx))
       break
     default:
