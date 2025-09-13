@@ -10,4 +10,5 @@ export interface Env {
   DB: D1Database
   PRISMA: PrismaClient
   CLIENT: ZodiosInstance<JSAMobileEndpoint>
+  RATE_LIMITTER: KVNamespace
 }
