@@ -10,8 +10,8 @@ export const upsertGame = async (env: Env, record: Record, gameId: string) => {
   const title: string = metadata.getStandardMetadata(RecordMetadataKey.TOURNAMENT)!
 
   // プレイヤー情報
-  const black_name: string = metadata.getStandardMetadata(RecordMetadataKey.BLACK_NAME) ?? '不明'
-  const white_name: string = metadata.getStandardMetadata(RecordMetadataKey.WHITE_NAME) ?? '不明'
+  const black_name: string = metadata.getStandardMetadata(RecordMetadataKey.BLACK_NAME) ?? '未定'
+  const white_name: string = metadata.getStandardMetadata(RecordMetadataKey.WHITE_NAME) ?? '未定'
 
   // 日付情報を取得
   // biome-ignore lint/style/noNonNullAssertion: reason
