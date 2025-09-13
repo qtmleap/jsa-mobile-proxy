@@ -1,4 +1,5 @@
 import { createRoute, OpenAPIHono } from '@hono/zod-openapi'
+import { cache } from 'hono/cache'
 import { HTTPException } from 'hono/http-exception'
 import { ListSchema } from '@/models/common'
 import { GameSchema } from '@/models/game.dto'
@@ -11,6 +12,7 @@ app.openapi(
     method: 'get',
     path: '/',
     tags: ['Games'],
+    middleware: [cache({ cacheName: 'games', cacheControl: 'public, max-age=300' })],
     summary: 'Search Game List',
     description: 'Search Game List',
     request: {
