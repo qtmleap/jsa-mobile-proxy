@@ -31,7 +31,15 @@ app.openapi(
     const result = ListSchema(PlayerSchema).safeParse(
       await c.env.PRISMA.player.findMany({
         orderBy: { name: 'desc' },
-        take: 100
+        take: 100,
+        include: {
+          _count: {
+            select: {
+              blackGames: true,
+              whiteGames: true
+            }
+          }
+        }
       })
     )
     if (!result.success) {
