@@ -12,8 +12,8 @@ head_sampling_rate = 0.1
 
 ## JKF形式の棋譜データをKVに保存する
 [[kv_namespaces]]
-binding = "KV"
-id = "88c586c849b0403cb2fdda3cb107b2f1"
+binding = "RATE_LIMITTER"
+id = "60fc87bcd9a443b385b186a67864ec8b"
 
 ## BIN形式の棋譜データをR2に保存する
 [[r2_buckets]]
