@@ -28,7 +28,7 @@ database_id = "e103ae8d-9f03-4e70-a091-90ba9acf9e27"
 migrations_dir = "prisma/migrations"
 
 [triggers]
-crons = ['*/5 * * * *']
+crons = ['*/5 * * * *', '*/1 * * * *']
 
 [dev]
 ip = "0.0.0.0"
