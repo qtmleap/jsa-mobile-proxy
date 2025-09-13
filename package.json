@@ -38,7 +38,7 @@
     "wrangler": "4.36.0"
   },
   "dependencies": {
-    "@mito-shogi/tsshogi-jsa": "^0.1.4",
+    "@mito-shogi/tsshogi-jsa": "^0.2.0",
     "@prisma/adapter-d1": "^6.16.1",
     "@prisma/client": "^6.16.1",
     "@zodios/core": "^10.9.6",
