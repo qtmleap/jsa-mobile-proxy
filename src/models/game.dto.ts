@@ -1,18 +1,16 @@
 import z from 'zod'
 
-export const PlayerSchema = z.object({
-  name: z.string().nonempty()
-})
-
 export const GameSchema = z.object({
   id: z.number().int(),
   title: z.string(),
   startTime: z.date(),
-  endTime: z.coerce.date().nullable(),
+  endTime: z.coerce.date().optional(),
   moves: z.number().int(),
-  black: PlayerSchema,
-  white: PlayerSchema
+  blackId: z.string().nonempty(),
+  whiteId: z.string().nonempty(),
+  timeLimit: z.number().int().optional(),
+  tournament: z.string().nonempty().optional(),
+  location: z.string().optional()
 })
 
-export type Player = z.infer<typeof PlayerSchema>
 export type Game = z.infer<typeof GameSchema>

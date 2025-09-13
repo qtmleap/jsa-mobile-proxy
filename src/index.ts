@@ -13,7 +13,9 @@ import { csrf } from 'hono/csrf'
 import { logger } from 'hono/logger'
 import { timeout } from 'hono/timeout'
 import games from './api/games'
+import players from './api/players'
 import search from './api/search'
+import tags from './api/tags'
 import type { Env } from './utils/bindings'
 import { createClient } from './utils/client'
 import scheduled from './utils/handler'
@@ -46,6 +48,8 @@ app.use(logger())
 app.use(compress({ encoding: 'deflate' }))
 app.route('/api/search', search)
 app.route('/api/games', games)
+app.route('/api/players', players)
+app.route('/api/tags', tags)
 app.doc31('/openapi.json', specification)
 app.get('/docs', Scalar(reference))
 app.notFound((c) => c.redirect('/docs'))

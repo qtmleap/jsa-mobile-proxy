@@ -1,11 +1,8 @@
 import { createRoute, OpenAPIHono } from '@hono/zod-openapi'
-import { decodeGameList, decodeJSA, importJSA } from '@mito-shogi/tsshogi-jsa'
 import { HTTPException } from 'hono/http-exception'
-import { exportJKF, type Record } from 'tsshogi'
-import { z } from 'zod'
-import { SearchListRequestSchema, SearchListResponseSchema } from '@/models/search.dto'
+import { ListSchema } from '@/models/common'
+import { TagSchema } from '@/models/tag.dto'
 import type { Env } from '@/utils/bindings'
-import { upsertGameInfo } from '@/utils/prisma'
 
 const app = new OpenAPIHono<{ Bindings: Env }>()
 
@@ -13,82 +10,34 @@ app.openapi(
   createRoute({
     method: 'get',
     path: '/',
-    tags: ['Search'],
-    summary: 'Search KIF List',
-    description: 'Search',
+    tags: ['Tags'],
+    summary: 'Search Tag List',
+    description: 'Search Tag List',
     request: {
-      query: SearchListRequestSchema
+      // query: SearchListRequestSchema
     },
     responses: {
       200: {
         content: {
           'application/json': {
-            // 型の付け方が良くない
-            schema: SearchListResponseSchema
+            schema: ListSchema(TagSchema)
           }
         },
-        description: '直近の棋譜一覧'
+        description: 'タグ一覧'
       }
     }
   }),
   async (c) => {
-    const { p1, p2, p3 } = c.req.valid('query')
-    const buffer = await c.env.CLIENT.get('/api/index.php', {
-      queries: {
-        // @ts-ignore
-        action: 'search',
-        p1,
-        p2,
-        p3
-      }
-    })
-    const result = SearchListResponseSchema.safeParse(decodeGameList(Buffer.from(buffer)))
+    const result = ListSchema(TagSchema).safeParse(
+      await c.env.PRISMA.tag.findMany({
+        orderBy: { name: 'desc' },
+        take: 100
+      })
+    )
     if (!result.success) {
-      throw new HTTPException(400, { message: result.error.message })
+      throw new HTTPException(500, { message: result.error.message })
     }
     return c.json(result.data, 200)
-  }
-)
-
-app.openapi(
-  createRoute({
-    method: 'get',
-    path: '/:game_id',
-    tags: ['Search'],
-    summary: 'Search KIF',
-    description: 'Search',
-    request: {
-      params: z.object({
-        game_id: z.coerce.number().int().default(100)
-      })
-    },
-    responses: {
-      200: {
-        content: {
-          'application/json': {
-            // 型の付け方が良くない
-            schema: z.object({})
-          }
-        },
-        description: 'JKF形式の棋譜データ'
-      }
-    }
-  }),
-  async (c) => {
-    const { game_id } = c.req.valid('param')
-    const buffer = await c.env.CLIENT.get('/api/index.php', {
-      queries: {
-        // @ts-ignore
-        action: 'shogi',
-        p1: game_id
-      }
-    })
-    const record: Record | Error = importJSA(buffer)
-    if (record instanceof Error) {
-      throw new HTTPException(400, { message: record.message })
-    }
-    await upsertGameInfo(c.env, decodeJSA(buffer), record)
-    return c.json(exportJKF(record), 200)
   }
 )
 
