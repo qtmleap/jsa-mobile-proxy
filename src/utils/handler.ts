@@ -27,24 +27,27 @@ const update = async (env: Env, _ctx: ExecutionContext) => {
         // @ts-ignore
         action: 'search',
         p1: 0,
-        p2: 400,
-        p3: 1
+        p2: 14000,
+        p3: 3
       }
     })
   )
   console.debug(`Fetched ${games.length} games`)
   const buffers: GameBuffer[] = await Promise.all(
-    games.map(async (game) => ({
-      buffer: await env.CLIENT.get(`/api/index.php`, {
-        queries: {
-          // @ts-ignore
-          action: 'shogi',
-          p1: game.game_id
-        }
-      }),
-      game_id: game.game_id.toString()
-    }))
+    games
+      .filter((game) => game.length !== 0)
+      .map(async (game) => ({
+        buffer: await env.CLIENT.get(`/api/index.php`, {
+          queries: {
+            // @ts-ignore
+            action: 'shogi',
+            p1: game.game_id
+          }
+        }),
+        game_id: game.game_id.toString()
+      }))
   )
+  console.debug(`Fetched ${games.length} -> ${buffers.length} games`)
   // バイナリ保存
   await Promise.all(
     buffers.map((buffer) => env.BUCKET.put(`bin/${buffer.game_id}.bin`, buffer.buffer), {
