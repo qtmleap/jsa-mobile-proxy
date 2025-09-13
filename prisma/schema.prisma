@@ -15,26 +15,27 @@ datasource db {
 
 // Game
 model Game {
-  id        Int       @id
-  moves     Int
-  title     String
-  blackTime Int?      @map("black_time")
-  whiteTime Int?      @map("white_time")
-  location  String?
-  kif       String?
-  date      String
-  timeLimit Int       @map("time_limit")
-  startTime DateTime  @map("start_time")
-  endTime   DateTime? @map("end_time")
-  blackId   String    @map("black_id")
-  whiteId   String    @map("white_id")
-  blackRank String?   @map("black_rank")
-  whiteRank String?   @map("white_rank")
-  black     Player    @relation("black_games", fields: [blackId], references: [name], onDelete: Cascade)
-  white     Player    @relation("white_games", fields: [whiteId], references: [name], onDelete: Cascade)
-  tags      Tag[]
-  createdAt DateTime  @default(now()) @map("created_at")
-  updatedAt DateTime  @updatedAt @map("updated_at")
+  id         Int       @id
+  moves      Int
+  title      String
+  blackTime  Int?      @map("black_time")
+  whiteTime  Int?      @map("white_time")
+  location   String?
+  kif        String?
+  date       String
+  tournament String?
+  timeLimit  Int       @map("time_limit")
+  startTime  DateTime  @map("start_time")
+  endTime    DateTime? @map("end_time")
+  blackId    String    @map("black_id")
+  whiteId    String    @map("white_id")
+  blackRank  String?   @map("black_rank")
+  whiteRank  String?   @map("white_rank")
+  black      Player    @relation("black_games", fields: [blackId], references: [name], onDelete: Cascade)
+  white      Player    @relation("white_games", fields: [whiteId], references: [name], onDelete: Cascade)
+  tags       Tag[]
+  createdAt  DateTime  @default(now()) @map("created_at")
+  updatedAt  DateTime  @updatedAt @map("updated_at")
 
   @@index([title])
   @@map("games")
