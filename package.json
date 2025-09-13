@@ -38,6 +38,7 @@
     "wrangler": "4.36.0"
   },
   "dependencies": {
+    "@hono-rate-limiter/cloudflare": "^0.2.2",
     "@mito-shogi/tsshogi-jsa": "^0.2.0",
     "@prisma/adapter-d1": "^6.16.1",
     "@prisma/client": "^6.16.1",
