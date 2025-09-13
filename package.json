@@ -21,7 +21,7 @@
   },
   "devDependencies": {
     "@biomejs/biome": "^2.2.4",
-    "@cloudflare/workers-types": "^4.20250912.0",
+    "@cloudflare/workers-types": "^4.20250913.0",
     "@commitlint/cli": "^19.8.1",
     "@commitlint/config-conventional": "^19.8.1",
     "@commitlint/cz-commitlint": "^19.8.1",
@@ -29,7 +29,7 @@
     "@scalar/hono-api-reference": "^0.9.18",
     "@types/bun": "^1.2.21",
     "@types/lodash": "^4.17.20",
-    "@types/node": "^24.3.2",
+    "@types/node": "^24.3.3",
     "commitizen": "^4.3.1",
     "husky": "^9.1.7",
     "lint-staged": "^16.1.6",
@@ -38,7 +38,7 @@
     "wrangler": "4.36.0"
   },
   "dependencies": {
-    "@mito-shogi/tsshogi-jsa": "0.1.0",
+    "@mito-shogi/tsshogi-jsa": "^0.1.2",
     "@prisma/adapter-d1": "^6.16.1",
     "@prisma/client": "^6.16.1",
     "@zodios/core": "^10.9.6",
