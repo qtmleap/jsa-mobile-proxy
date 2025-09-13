@@ -44,6 +44,11 @@ app.openapi(
           startTime: {
             gte: startTime,
             lte: endTime
+          },
+          OR: {
+            blackId: {
+              equals: player
+            }
           }
         }
       })
