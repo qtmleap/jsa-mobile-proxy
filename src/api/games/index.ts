@@ -2,7 +2,7 @@ import { createRoute, OpenAPIHono } from '@hono/zod-openapi'
 import { cache } from 'hono/cache'
 import { HTTPException } from 'hono/http-exception'
 import { ListSchema } from '@/models/common'
-import { GameSchema } from '@/models/game.dto'
+import { GameRequestQuerySchema, GameSchema } from '@/models/game.dto'
 import type { Env } from '@/utils/bindings'
 
 const app = new OpenAPIHono<{ Bindings: Env }>()
@@ -16,7 +16,7 @@ app.openapi(
     summary: 'Search Game List',
     description: 'Search Game List',
     request: {
-      // query: SearchListRequestSchema
+      query: GameRequestQuerySchema
     },
     responses: {
       200: {
@@ -30,13 +30,21 @@ app.openapi(
     }
   }),
   async (c) => {
+    const { page, limit, tournament, player, startTime, endTime } = c.req.valid('query')
     const result = ListSchema(GameSchema).safeParse(
       await c.env.PRISMA.game.findMany({
         orderBy: { startTime: 'desc' },
-        take: 100,
+        take: limit,
+        skip: (page - 1) * limit,
         include: {
           black: true,
           white: true
+        },
+        where: {
+          startTime: {
+            gte: startTime,
+            lte: endTime
+          }
         }
       })
     )
