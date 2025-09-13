@@ -45,6 +45,7 @@ app.openapi(
             gte: startTime,
             lte: endTime
           },
+          tournament: tournament ?? undefined,
           OR: [{ blackId: player ?? undefined }, { whiteId: player ?? undefined }]
         }
       })
