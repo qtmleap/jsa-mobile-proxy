@@ -1,13 +1,14 @@
-import { decodeGameList } from '@mito-shogi/tsshogi-jsa'
+import { decodeGameList, decodeJSA, importJSA } from '@mito-shogi/tsshogi-jsa'
 import { PrismaD1 } from '@prisma/adapter-d1'
 import { PrismaClient } from '@prisma/client'
+import type { Record } from 'tsshogi'
 import type { Env } from './bindings'
 import { createClient } from './client'
-import { upsertGame } from './prisma'
+import { upsertGame, upsertGameInfo } from './prisma'
 
 type GameBuffer = {
   buffer: Buffer
-  game_id: string
+  game_id: number
 }
 
 /**
@@ -31,29 +32,29 @@ const update = async (env: Env, _ctx: ExecutionContext) => {
       }
     })
   )
-  // D1にデータを保存
-  const results = await Promise.allSettled(
-    games.filter((game) => game.length === 0).map((game) => upsertGame(env, game))
-  )
-  console.log(`Updated ${results.length} games`)
-  const failures = results.filter((result): result is PromiseRejectedResult => result.status === 'rejected')
-  if (failures.length > 0) {
-    console.error(`Failed to update ${failures.length} games`)
-  }
   const buffers: GameBuffer[] = await Promise.all(
-    games
-      .filter((game) => game.length !== 0)
-      .slice(0, 100)
-      .map(async (game) => ({
-        buffer: await env.CLIENT.get(`/api/index.php`, {
-          queries: {
-            // @ts-ignore
-            action: 'shogi',
-            p1: game.game_id
-          }
-        }),
-        game_id: game.game_id.toString()
-      }))
+    games.map(async (game) => ({
+      buffer: await env.CLIENT.get(`/api/index.php`, {
+        queries: {
+          // @ts-ignore
+          action: 'shogi',
+          p1: game.game_id
+        }
+      }),
+      game_id: game.game_id
+    }))
+  )
+  // D1に書き込み
+  await Promise.all(games.map((game) => upsertGame(env, game)))
+  // D1に書き込み
+  await Promise.all(
+    buffers.map((buffer) => {
+      const record: Record | Error = importJSA(buffer.buffer)
+      if (record instanceof Error) {
+        throw new Error(`Failed to import JSA for game ${buffer.game_id}: ${record.message}`)
+      }
+      return upsertGameInfo(env, decodeJSA(buffer.buffer), record)
+    })
   )
   // R2にバイナリ保存
   await Promise.all(
