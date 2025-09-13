@@ -3,6 +3,7 @@ import { decodeGameList, decodeJSA, importJSA } from '@mito-shogi/tsshogi-jsa'
 import { HTTPException } from 'hono/http-exception'
 import { exportJKF, type Record } from 'tsshogi'
 import { z } from 'zod'
+import { GameSchema } from '@/models/game.dto'
 import { SearchListRequestSchema, SearchListResponseSchema } from '@/models/search.dto'
 import type { Env } from '@/utils/bindings'
 import { upsertGameInfo } from '@/utils/prisma'
@@ -24,7 +25,7 @@ app.openapi(
         content: {
           'application/json': {
             // 型の付け方が良くない
-            schema: SearchListResponseSchema
+            schema: z.array(GameSchema)
           }
         },
         description: '直近の棋譜一覧'
