@@ -14,6 +14,10 @@
 - Husky
 - Zod
 
+### Cron Trigger
+
+[http://localhost:28787/__scheduled?cron=*+*+*+*+*](http://localhost:28787/__scheduled?cron=*+*+*+*+*)
+
 ### 対応フォーマット
 
 - [x] JKF
