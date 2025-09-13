@@ -47,7 +47,7 @@ app.openapi(
       throw new HTTPException(500, { message: result.error.message })
     }
     return c.json(
-      result.data.filter((result) => result.count > 5).sort((a, b) => b.count - a.count),
+      result.data.filter((result) => result.count >= 5).sort((a, b) => b.count - a.count),
       200
     )
   }
