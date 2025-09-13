@@ -19,5 +19,7 @@ export const GameRequestQuerySchema = z.object({
   page: z.coerce.number().int().min(1).default(1),
   limit: z.coerce.number().int().min(1).max(100).default(20),
   tournament: z.string().nonempty().optional(),
-  player: z.string().nonempty().optional()
+  player: z.string().nonempty().optional(),
+  startTime: z.coerce.date().optional(),
+  endTime: z.coerce.date().optional()
 })
