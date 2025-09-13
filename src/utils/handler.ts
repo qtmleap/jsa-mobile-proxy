@@ -16,8 +16,12 @@ type RecordType = {
   game_id: string
 }
 
-const update = async (env: Env, ctx: ExecutionContext) => {
-  // Cron Triggerでの実行の場合には初期化が呼ばれずPRISMAとCLIENTがundefinedになっているみたい
+/**
+ * Cron Triggerでの実行の場合には初期化が呼ばれずPRISMAとCLIENTがundefinedになっているみたい
+ * @param env
+ * @param ctx
+ */
+const update = async (env: Env, _ctx: ExecutionContext) => {
   const adapter = new PrismaD1(env.DB)
   env.PRISMA = new PrismaClient({ adapter })
   env.CLIENT = createClient(env)
@@ -34,7 +38,11 @@ const update = async (env: Env, ctx: ExecutionContext) => {
     })
   )
   console.log(`Fetched ${games.length} games`)
-  ctx.waitUntil(Promise.all(games.map((game) => upsertGame(env, game))))
+  const results = await Promise.allSettled(games.map((game) => upsertGame(env, game)))
+  const failures = results.filter((result): result is PromiseRejectedResult => result.status === 'rejected')
+  if (failures.length > 0) {
+    console.error(`Failed to update ${failures.length} games`)
+  }
   // console.log(`Fetched ${games.length} games`)
   // const buffers: GameBuffer[] = await Promise.all(
   //   games
