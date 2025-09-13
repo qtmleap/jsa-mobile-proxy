@@ -5,7 +5,7 @@ import { exportJKF, type Record } from 'tsshogi'
 import { z } from 'zod'
 import { SearchListRequestSchema, SearchListResponseSchema } from '@/models/search.dto'
 import type { Env } from '@/utils/bindings'
-import { upsertGameInfo } from '@/utils/prisma'
+import { upsertGame, upsertGameInfo } from '@/utils/prisma'
 
 const app = new OpenAPIHono<{ Bindings: Env }>()
 
@@ -42,7 +42,9 @@ app.openapi(
         p3
       }
     })
-    const result = SearchListResponseSchema.safeParse(decodeGameList(Buffer.from(buffer)))
+    const { games } = decodeGameList(Buffer.from(buffer))
+    c.executionCtx.waitUntil(Promise.all(games.map((game) => upsertGame(c.env, game))))
+    const result = SearchListResponseSchema.safeParse({ games })
     if (!result.success) {
       throw new HTTPException(400, { message: result.error.message })
     }

@@ -4,7 +4,7 @@ import { exportJKFString, type Record } from 'tsshogi'
 import type { Env } from './bindings'
 
 export const upsertGameInfo = async (env: Env, game: GameInfo, record: Record) => {
-  await env.PRISMA.game.upsert({
+  return env.PRISMA.game.upsert({
     where: { id: game.info.game_id },
     create: {
       id: game.info.game_id,
@@ -60,7 +60,7 @@ export const upsertGameInfo = async (env: Env, game: GameInfo, record: Record) =
 }
 
 export const upsertGame = async (env: Env, game: Game) => {
-  await env.PRISMA.game.upsert({
+  return env.PRISMA.game.upsert({
     where: { id: game.game_id },
     create: {
       id: game.game_id,
