@@ -24,7 +24,7 @@ model Game {
   kif        String?
   date       String
   tournament String?
-  timeLimit  Int       @map("time_limit")
+  timeLimit  Int?      @map("time_limit")
   startTime  DateTime  @map("start_time")
   endTime    DateTime? @map("end_time")
   blackId    String    @map("black_id")
