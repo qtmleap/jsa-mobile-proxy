@@ -12,11 +12,8 @@
   },
   "scripts": {
     "dev": "wrangler dev src/index.ts --test-scheduled",
-    "dev:staging": "wrangler dev src/index.ts --test-scheduled --env staging",
-    "remote": "wrangler dev src/index.ts --test-scheduled --remote",
-    "remote:staging": "wrangler dev src/index.ts --test-scheduled --remote --env staging",
+    "predeploy": "bunx tsc --noEmit",
     "deploy": "wrangler deploy --minify src/index.ts --keep-vars",
-    "deploy:staging": "wrangler deploy --minify src/index.ts --keep-vars --env staging",
     "prepare": "husky"
   },
   "devDependencies": {

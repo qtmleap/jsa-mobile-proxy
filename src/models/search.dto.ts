@@ -35,3 +35,10 @@ export const SearchListResponseSchema = z.object({
   games: z.array(SearchItemResponseSchema),
   count: z.number().int().positive()
 })
+
+export const SearchRequestParamsSchema = z.object({
+  game_id: z.coerce.number().int().openapi({
+    description: '対局ID',
+    example: 100
+  })
+})

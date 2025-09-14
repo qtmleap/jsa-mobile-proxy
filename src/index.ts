@@ -76,16 +76,16 @@ app.doc31('/openapi.json', specification)
 app.get('/docs', Scalar(reference))
 app.notFound((c) => c.redirect('/docs'))
 app.onError(async (error, c) => {
-  console.error(error)
   if (error instanceof HTTPException) {
-    console.error(error.message)
     return c.json({ message: error.message }, error.status)
   }
   if (error instanceof ZodError) {
-    console.error(error.message)
-    return c.json({ message: JSON.parse(error.message), description: error.cause }, 400)
+    return c.json({ message: JSON.parse(error.message), description: error.cause }, 500)
   }
-  console.error(error)
+  if (error.name === 'PrismaClientValidationError') {
+    return c.json({ message: error.message }, 500)
+  }
+  console.error(error.name)
   return c.json({ message: error.message }, 500)
 })
 

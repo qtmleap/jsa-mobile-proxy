@@ -13,6 +13,8 @@ export interface Env {
   PRISMA: PrismaClient
   CLIENT: ZodiosInstance<JSAMobileEndpoint>
   RATE_LIMITTER: KVNamespace
+  PLAN_ID: number
+  IS_PREMIUM: boolean
 }
 
 // Honoのコンテキスト変数の型定義

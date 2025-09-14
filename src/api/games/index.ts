@@ -1,20 +1,23 @@
 import { createRoute, OpenAPIHono } from '@hono/zod-openapi'
 import { authJWT } from '@/middleware/auth'
 import { ListSchema } from '@/models/common'
-import { GameRequestQuerySchema, GameSchema } from '@/models/game.dto'
+import { GameRequestParamsSchema, GameRequestQuerySchema, GameSchema } from '@/models/game.dto'
 import type { Env } from '@/utils/bindings'
 
-const app = new OpenAPIHono<{ Bindings: Env }>()
+const app = new OpenAPIHono<{ Bindings: Env }>({
+  defaultHook: (result) => {
+    if (!result.success) {
+      throw result.error
+    }
+  }
+})
 
 app.openapi(
   createRoute({
     method: 'get',
     path: '/',
     tags: ['Games'],
-    middleware: [
-      // process.env.NODE_ENV === 'production'  cache({ cacheName: 'games', cacheControl: 'public, max-age=300' })
-      authJWT
-    ],
+    middleware: [authJWT],
     summary: 'Search Game List',
     description: 'Search Game List',
     request: {
@@ -32,38 +35,97 @@ app.openapi(
     }
   }),
   async (c) => {
-    console.log('Fetching game list...')
-    const payload = c.get('jwtPayload')
-    const { page, limit, tournament, player, startTime, endTime } = c.req.valid('query')
-    console.log('User ID:', payload?.uid)
-
+    const { page, limit, tournament, startTime, endTime, player } = c.req.valid('query')
     const result = ListSchema(GameSchema).safeParse(
       await c.env.PRISMA.game.findMany({
         orderBy: { startTime: 'desc' },
         take: limit,
         skip: (page - 1) * limit,
-        include: {
-          black: true,
-          white: true
+        select: {
+          id: true,
+          moves: true,
+          title: true,
+          startTime: true,
+          endTime: true,
+          blackId: true,
+          whiteId: true,
+          timeLimit: true,
+          tournament: true,
+          location: true,
+          tags: true
         },
         where: {
-          // ...(startTime || endTime
-          //   ? {
-          //       startTime: {
-          //         ...(startTime && { gte: startTime }),
-          //         ...(endTime && { lte: endTime })
-          //       }
-          //     }
-          //   : {}),
+          ...(startTime || endTime
+            ? {
+                startTime: {
+                  ...(startTime && { gte: startTime }),
+                  ...(endTime && { lte: endTime })
+                }
+              }
+            : {}),
           tournament: {
             equals: tournament
-          }
-          // OR: [{ blackId: player ?? undefined }, { whiteId: player ?? undefined }]
+          },
+          ...(player
+            ? {
+                OR: [{ blackId: player }, { whiteId: player }]
+              }
+            : {})
         }
       })
     )
     if (!result.success) {
-      console.error(result.error)
+      throw result.error
+    }
+    return c.json(result.data, 200)
+  }
+)
+
+app.openapi(
+  createRoute({
+    method: 'get',
+    path: '/:game_id',
+    tags: ['Games'],
+    middleware: [authJWT],
+    summary: 'Get Game Details',
+    description: 'Get Game Details',
+    request: {
+      params: GameRequestParamsSchema
+    },
+    responses: {
+      200: {
+        content: {
+          'application/json': {
+            schema: GameSchema
+          }
+        },
+        description: '対局詳細'
+      }
+    }
+  }),
+  async (c) => {
+    const { game_id } = c.req.valid('param')
+    console.log(game_id)
+    const result = GameSchema.safeParse(
+      await c.env.PRISMA.game.findUniqueOrThrow({
+        where: { id: game_id },
+        select: {
+          id: true,
+          moves: true,
+          title: true,
+          startTime: true,
+          endTime: true,
+          blackId: true,
+          whiteId: true,
+          timeLimit: true,
+          tournament: true,
+          location: true,
+          kif: true,
+          tags: true
+        }
+      })
+    )
+    if (!result.success) {
       throw result.error
     }
     return c.json(result.data, 200)
