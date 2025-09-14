@@ -1,14 +1,19 @@
 import { createRoute, OpenAPIHono } from '@hono/zod-openapi'
 import { decodeGameList, decodeJSA, importJSA } from '@mito-shogi/tsshogi-jsa'
 import { HTTPException } from 'hono/http-exception'
-import type { JwtVariables } from 'hono/jwt'
 import { exportJKF, type Record } from 'tsshogi'
 import { z } from 'zod'
-import { SearchListRequestSchema, SearchListResponseSchema } from '@/models/search.dto'
+import { SearchListRequestSchema, SearchListResponseSchema, SearchRequestParamsSchema } from '@/models/search.dto'
 import type { Env } from '@/utils/bindings'
-import { upsertGame, upsertGameInfo } from '@/utils/prisma'
+import { upsertGameInfo } from '@/utils/prisma'
 
-const app = new OpenAPIHono<{ Bindings: Env; Variables: JwtVariables }>()
+const app = new OpenAPIHono<{ Bindings: Env }>({
+  defaultHook: (result) => {
+    if (!result.success) {
+      throw result.error
+    }
+  }
+})
 
 app.openapi(
   createRoute({
@@ -44,8 +49,6 @@ app.openapi(
       }
     })
     const { games } = decodeGameList(Buffer.from(buffer))
-    console.log(games)
-    c.executionCtx.waitUntil(Promise.all(games.map((game) => upsertGame(c.env, game))))
     const result = SearchListResponseSchema.safeParse({ games, count: games.length })
     if (!result.success) {
       throw result.error
@@ -62,9 +65,7 @@ app.openapi(
     summary: 'Search KIF',
     description: 'Search',
     request: {
-      params: z.object({
-        game_id: z.coerce.number().int().default(100)
-      })
+      params: SearchRequestParamsSchema
     },
     responses: {
       200: {

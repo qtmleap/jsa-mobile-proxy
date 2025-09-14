@@ -44,9 +44,9 @@ const update = async (env: Env, _ctx: ExecutionContext) => {
       game_id: game.game_id
     }))
   )
-  // D1に書き込み
+  // D1に棋譜一覧書き込み
   await Promise.all(games.map((game) => upsertGame(env, game)))
-  // D1に書き込み
+  // D1に棋譜詳細書き込み
   await Promise.all(
     buffers.map((buffer) => {
       const record: Record | Error = importJSA(buffer.buffer)

@@ -1,14 +1,18 @@
 import z from 'zod'
+import { Tournament } from '@/enums/tournament'
 
 export const GameSchema = z.object({
   id: z.number().int().openapi({
     description: '対局ID',
     example: 19249
   }),
-  title: z.string().openapi({
-    description: 'タイトル',
-    example: '第38期竜王戦6組昇級者決定戦'
-  }),
+  title: z
+    .string()
+    .openapi({
+      description: 'タイトル',
+      example: '第38期竜王戦6組昇級者決定戦'
+    })
+    .transform((v) => v.replace(/^【[^】]+】\s*/g, '')),
   startTime: z.date().openapi({
     description: '開始時刻',
     example: '2025-09-18T01:00:00.000Z'
@@ -33,6 +37,13 @@ export const GameSchema = z.object({
     description: '持ち時間（秒）',
     example: 3600
   }),
+  kif: z
+    .string()
+    .optional()
+    .openapi({
+      description: 'JKF形式の棋譜データ'
+    })
+    .transform((v) => (v === undefined ? undefined : JSON.parse(v))),
   tournament: z.string().nonempty().nullable().openapi({
     description: '棋戦',
     example: '竜王戦'
@@ -40,10 +51,29 @@ export const GameSchema = z.object({
   location: z.string().nullable().openapi({
     description: '対局場所',
     example: '東京・将棋会館'
-  })
+  }),
+  tags: z
+    .array(
+      z
+        .object({
+          name: z.string().nonempty()
+        })
+        .transform((v) => v.name)
+    )
+    .openapi({
+      description: 'タグ',
+      example: ['相掛かり']
+    })
 })
 
 export type Game = z.infer<typeof GameSchema>
+
+export const GameRequestParamsSchema = z.object({
+  game_id: z.coerce.number().int().openapi({
+    description: '対局ID',
+    example: 100
+  })
+})
 
 export const GameRequestQuerySchema = z.object({
   page: z.coerce.number().int().min(1).default(1).openapi({
@@ -54,7 +84,7 @@ export const GameRequestQuerySchema = z.object({
     description: '1ページあたりの取得件数',
     example: 20
   }),
-  tournament: z.string().nonempty().optional().openapi({
+  tournament: z.enum(Tournament).optional().openapi({
     description: '棋戦名でフィルタリング',
     example: '竜王戦'
   }),

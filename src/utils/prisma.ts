@@ -15,7 +15,7 @@ export const upsertGameInfo = async (env: Env, game: GameInfo, record: Record) =
     where: { id: game.info.game_id },
     create: {
       id: game.info.game_id,
-      moves: game.info.length,
+      moves: game.info.moves,
       title: game.info.title,
       date: dayjs(game.info.start_time).format('YYYY/MM/DD'),
       black: {
@@ -48,7 +48,7 @@ export const upsertGameInfo = async (env: Env, game: GameInfo, record: Record) =
         : undefined
     },
     update: {
-      moves: game.info.length,
+      moves: game.info.moves,
       kif: exportJKFString(record),
       blackTime: game.info.time,
       whiteTime: game.info.time,
@@ -80,7 +80,7 @@ export const upsertGame = async (env: Env, game: Game) => {
     where: { id: game.game_id },
     create: {
       id: game.game_id,
-      moves: game.length,
+      moves: game.moves,
       title: game.title,
       date: dayjs(game.start_time).format('YYYY/MM/DD'),
       black: {
@@ -102,7 +102,7 @@ export const upsertGame = async (env: Env, game: Game) => {
       endTime: game.end_time ? dayjs(game.end_time).toDate() : undefined
     },
     update: {
-      moves: game.length,
+      moves: game.moves,
       tournament: game.tournament,
       black: {
         connectOrCreate: {
