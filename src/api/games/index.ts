@@ -120,7 +120,7 @@ app.openapi(
           timeLimit: true,
           tournament: true,
           location: true,
-          kif: true,
+          kif: c.env.IS_PREMIUM,
           tags: true
         }
       })
