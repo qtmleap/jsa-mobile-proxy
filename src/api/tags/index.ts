@@ -1,11 +1,12 @@
 import { createRoute, OpenAPIHono } from '@hono/zod-openapi'
 import { cache } from 'hono/cache'
 import { HTTPException } from 'hono/http-exception'
+import type { JwtVariables } from 'hono/jwt'
 import { ListSchema } from '@/models/common'
 import { TagSchema } from '@/models/tag.dto'
 import type { Env } from '@/utils/bindings'
 
-const app = new OpenAPIHono<{ Bindings: Env }>()
+const app = new OpenAPIHono<{ Bindings: Env; Variables: JwtVariables }>()
 
 app.openapi(
   createRoute({

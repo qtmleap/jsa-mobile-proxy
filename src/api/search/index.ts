@@ -1,13 +1,14 @@
 import { createRoute, OpenAPIHono } from '@hono/zod-openapi'
 import { decodeGameList, decodeJSA, importJSA } from '@mito-shogi/tsshogi-jsa'
 import { HTTPException } from 'hono/http-exception'
+import type { JwtVariables } from 'hono/jwt'
 import { exportJKF, type Record } from 'tsshogi'
 import { z } from 'zod'
 import { SearchListRequestSchema, SearchListResponseSchema } from '@/models/search.dto'
 import type { Env } from '@/utils/bindings'
 import { upsertGame, upsertGameInfo } from '@/utils/prisma'
 
-const app = new OpenAPIHono<{ Bindings: Env }>()
+const app = new OpenAPIHono<{ Bindings: Env; Variables: JwtVariables }>()
 
 app.openapi(
   createRoute({

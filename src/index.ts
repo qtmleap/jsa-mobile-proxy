@@ -11,6 +11,7 @@ import { compress } from 'hono/compress'
 import { cors } from 'hono/cors'
 import { csrf } from 'hono/csrf'
 import { HTTPException } from 'hono/http-exception'
+import type { JwtVariables } from 'hono/jwt'
 import { logger } from 'hono/logger'
 import { secureHeaders } from 'hono/secure-headers'
 import { timeout } from 'hono/timeout'
@@ -29,9 +30,9 @@ dayjs.extend(timezone)
 dayjs.extend(isToday)
 dayjs.tz.setDefault('Asia/Tokyo')
 
-const app = new Hono<{ Bindings: Env }>()
+const app = new Hono<{ Bindings: Env; Variables: JwtVariables }>()
 
-app.use('*', async (c: Context<{ Bindings: Env }>, next) => {
+app.use('*', async (c: Context<{ Bindings: Env; Variables: JwtVariables }>, next) => {
   const adapter = new PrismaD1(c.env.DB)
   c.env.PRISMA = new PrismaClient({ adapter })
   c.env.CLIENT = createClient(c.env)

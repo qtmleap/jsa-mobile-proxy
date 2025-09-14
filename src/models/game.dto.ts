@@ -64,10 +64,10 @@ export const GameRequestQuerySchema = z.object({
   }),
   startTime: z.coerce.date().optional().openapi({
     description: '開始時刻以降の対局でフィルタリング',
-    example: '2025-09-01T00:00:00Z'
+    example: '2025-09-01'
   }),
   endTime: z.coerce.date().optional().openapi({
     description: '終了時刻以前の対局でフィルタリング',
-    example: '2025-09-30T23:59:59Z'
+    example: '2025-09-30'
   })
 })
