@@ -1,6 +1,6 @@
 import { createRoute, OpenAPIHono } from '@hono/zod-openapi'
 import { authJWT } from '@/middleware/auth'
-import { ListSchema } from '@/models/common'
+import { ListSchema, PaginatedSchema } from '@/models/common'
 import { GameRequestParamsSchema, GameRequestQuerySchema, GameSchema } from '@/models/game.dto'
 import type { Env } from '@/utils/bindings'
 
@@ -27,7 +27,7 @@ app.openapi(
       200: {
         content: {
           'application/json': {
-            schema: ListSchema(GameSchema)
+            schema: PaginatedSchema(GameSchema)
           }
         },
         description: '直近の棋譜一覧'
@@ -36,8 +36,30 @@ app.openapi(
   }),
   async (c) => {
     const { page, limit, tournament, startTime, endTime, player } = c.req.valid('query')
-    const result = ListSchema(GameSchema).safeParse(
-      await c.env.PRISMA.game.findMany({
+
+    // 共通のwhere条件
+    const condition = {
+      ...(startTime || endTime
+        ? {
+            startTime: {
+              ...(startTime && { gte: startTime }),
+              ...(endTime && { lte: endTime })
+            }
+          }
+        : {}),
+      tournament: {
+        equals: tournament
+      },
+      ...(player
+        ? {
+            OR: [{ blackId: player }, { whiteId: player }]
+          }
+        : {})
+    }
+
+    // データと総件数を並行取得
+    const [games, count] = await Promise.all([
+      c.env.PRISMA.game.findMany({
         orderBy: { startTime: 'desc' },
         take: limit,
         skip: (page - 1) * limit,
@@ -54,30 +76,29 @@ app.openapi(
           location: true,
           tags: true
         },
-        where: {
-          ...(startTime || endTime
-            ? {
-                startTime: {
-                  ...(startTime && { gte: startTime }),
-                  ...(endTime && { lte: endTime })
-                }
-              }
-            : {}),
-          tournament: {
-            equals: tournament
-          },
-          ...(player
-            ? {
-                OR: [{ blackId: player }, { whiteId: player }]
-              }
-            : {})
-        }
+        where: condition
+      }),
+      c.env.PRISMA.game.count({
+        where: condition
       })
+    ])
+
+    const result = ListSchema(GameSchema).safeParse(
+      games.map((game) => ({ ...game, tags: game.tags.map((tag) => tag.name) }))
     )
     if (!result.success) {
       throw result.error
     }
-    return c.json(result.data, 200)
+
+    return c.json(
+      {
+        results: result.data,
+        count: count,
+        page: page,
+        limit: limit
+      },
+      200
+    )
   }
 )
 

@@ -1,3 +1,5 @@
+import z from 'zod'
+
 export enum Tournament {
   ABEMA = 'AbemaTVトーナメント',
   ASAHI = '朝日杯将棋オープン戦',
@@ -25,3 +27,5 @@ export enum Tournament {
   OUI = '王位戦',
   OUSHOU = '王将戦'
 }
+
+export const TournamentEnum = z.enum(Tournament).openapi('Tournament')
