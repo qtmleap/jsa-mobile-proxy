@@ -42,7 +42,7 @@ app.use('*', timeout(5000))
 app.use(
   '*',
   cors({
-    origin: [],
+    origin: ['localhost:5173', 'jsam.qleap.jp'],
     credentials: true,
     maxAge: 86400
   })
