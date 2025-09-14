@@ -10,12 +10,12 @@ export const JWTPayloadSchema = z.object({
   aud: z.string().optional(), // Audience (対象者)
   // カスタムクレーム
   uid: z.string(),
-  pid: z.number().int().positive() // Plan ID (整数値のプランID)
+  pid: z.number().int().nonnegative() // Plan ID (0:ゲスト, 1以上:有料プラン)
 })
 
 // JWTヘッダー用のスキーマ
 export const JWTHeaderSchema = z.object({
-  alg: z.enum(['HS256', 'HS384', 'HS512', 'RS256', 'RS384', 'RS512']).default('HS256'), // 対称鍵をデフォルトに
+  alg: z.enum(['HS256', 'HS384', 'HS512']).default('HS256'), // Cloudflare Workersでサポートされている対称鍵のみ
   typ: z.string().default('JWT') // トークンタイプ
 })
 

@@ -3,6 +3,13 @@ import dayjs from 'dayjs'
 import { exportJKFString, type Record } from 'tsshogi'
 import type { Env } from './bindings'
 
+/**
+ * 対局情報詳細データ書き込み
+ * @param env
+ * @param game
+ * @param record
+ * @returns
+ */
 export const upsertGameInfo = async (env: Env, game: GameInfo, record: Record) => {
   return env.PRISMA.game.upsert({
     where: { id: game.info.game_id },
@@ -62,6 +69,12 @@ export const upsertGameInfo = async (env: Env, game: GameInfo, record: Record) =
   })
 }
 
+/**
+ * 対局一覧APIからデータ書き込み
+ * @param env
+ * @param game
+ * @returns
+ */
 export const upsertGame = async (env: Env, game: Game) => {
   return env.PRISMA.game.upsert({
     where: { id: game.game_id },
@@ -84,7 +97,6 @@ export const upsertGame = async (env: Env, game: Game) => {
         }
       },
       whiteRank: game.white.rank, // 対局時の段級位
-      timeLimit: 0,
       tournament: game.tournament,
       startTime: dayjs(game.start_time).toDate(),
       endTime: game.end_time ? dayjs(game.end_time).toDate() : undefined

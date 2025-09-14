@@ -1,4 +1,5 @@
 import { createRoute, OpenAPIHono } from '@hono/zod-openapi'
+import { authJWT } from '@/middleware/auth'
 import { ListSchema } from '@/models/common'
 import { GameRequestQuerySchema, GameSchema } from '@/models/game.dto'
 import type { Env } from '@/utils/bindings'
@@ -10,7 +11,10 @@ app.openapi(
     method: 'get',
     path: '/',
     tags: ['Games'],
-    // middleware: [cache({ cacheName: 'games', cacheControl: 'public, max-age=300' })],
+    middleware: [
+      // process.env.NODE_ENV === 'production'  cache({ cacheName: 'games', cacheControl: 'public, max-age=300' })
+      authJWT
+    ],
     summary: 'Search Game List',
     description: 'Search Game List',
     request: {
@@ -28,8 +32,11 @@ app.openapi(
     }
   }),
   async (c) => {
+    console.log('Fetching game list...')
+    const payload = c.get('jwtPayload')
     const { page, limit, tournament, player, startTime, endTime } = c.req.valid('query')
-    console.log({ page, limit, tournament, player, startTime, endTime })
+    console.log('User ID:', payload?.uid)
+
     const result = ListSchema(GameSchema).safeParse(
       await c.env.PRISMA.game.findMany({
         orderBy: { startTime: 'desc' },
