@@ -30,6 +30,7 @@ export const upsertGameInfo = async (env: Env, game: GameInfo, record: Record) =
       endTime: game.info.end_time ? dayjs(game.info.end_time).toDate() : undefined,
       timeLimit: game.info.time,
       location: game.info.location,
+      tournament: game.info.tournament,
       tags: game.info.opening
         ? {
             connectOrCreate: {
@@ -47,6 +48,8 @@ export const upsertGameInfo = async (env: Env, game: GameInfo, record: Record) =
       startTime: dayjs(game.info.start_time).toDate(),
       endTime: game.info.end_time ? dayjs(game.info.end_time).toDate() : undefined,
       location: game.info.location,
+      tournament: game.info.tournament,
+      timeLimit: game.info.time,
       tags: game.info.opening
         ? {
             connectOrCreate: {
