@@ -75,7 +75,7 @@ const scheduled: ExportedHandlerScheduledHandler = async (
 ) => {
   console.log(`Scheduled event received: ${event.cron}`)
   switch (event.cron) {
-    case '*/1 * * * *':
+    case '*/5 * * * *':
       ctx.waitUntil(update(env as Env, ctx))
       break
     default:

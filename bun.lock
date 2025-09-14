@@ -5,7 +5,7 @@
       "name": "jsa_mobile_proxy",
       "dependencies": {
         "@hono-rate-limiter/cloudflare": "^0.2.2",
-        "@mito-shogi/tsshogi-jsa": "^0.2.0",
+        "@mito-shogi/tsshogi-jsa": "^0.2.1",
         "@prisma/adapter-d1": "^6.16.1",
         "@prisma/client": "^6.16.1",
         "@zodios/core": "^10.9.6",
@@ -217,7 +217,7 @@
 
     "@jridgewell/trace-mapping": ["@jridgewell/trace-mapping@0.3.9", "", { "dependencies": { "@jridgewell/resolve-uri": "^3.0.3", "@jridgewell/sourcemap-codec": "^1.4.10" } }, "sha512-3Belt6tdc8bPgAtbcmdtNJlirVoTmEb5e2gC94PnkwEW9jI6CAHUeoG85tjWP5WquqfavoMtMwiG4P926ZKKuQ=="],
 
-    "@mito-shogi/tsshogi-jsa": ["@mito-shogi/tsshogi-jsa@0.2.0", "https://npm.pkg.github.com/download/@mito-shogi/tsshogi-jsa/0.2.0/d1e89f33365e351e641d9e719a86b1687c34e78e", { "dependencies": { "dayjs": "^1.11.18", "iconv-lite": "^0.7.0", "tsshogi": "^2.1.0" } }, "sha512-lNE6gUWst4KpEU6lzSyJAcCwdgfJn6OfxL47hYn1ICKOan9Cj9DYblTLZbE2KPifhAFiXNI+E3Be4bdgDt2ugA=="],
+    "@mito-shogi/tsshogi-jsa": ["@mito-shogi/tsshogi-jsa@0.2.2", "https://npm.pkg.github.com/download/@mito-shogi/tsshogi-jsa/0.2.2/2f89b6ae721bb97e8cfed59e792b111521e90eb1", { "dependencies": { "dayjs": "^1.11.18", "iconv-lite": "^0.7.0", "tsshogi": "^2.1.0" } }, "sha512-yIf9yCNrpUQd3Jt41O7GzTNNH9wqu5Ez9P8Jp7fWFfqwpu+KSy5AiNTcas7r64/Xt4SZ9TgLHVvN86Z3EDmZeQ=="],
 
     "@poppinss/colors": ["@poppinss/colors@4.1.5", "", { "dependencies": { "kleur": "^4.1.5" } }, "sha512-FvdDqtcRCtz6hThExcFOgW0cWX+xwSMWcRuQe5ZEb2m7cVQOAVZOIMt+/v9RxGiD9/OY16qJBXK4CVKWAPalBw=="],
 

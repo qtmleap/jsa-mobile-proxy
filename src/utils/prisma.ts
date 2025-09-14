@@ -82,11 +82,13 @@ export const upsertGame = async (env: Env, game: Game) => {
       },
       whiteRank: game.white.rank, // 対局時の段級位
       timeLimit: 0,
+      tournament: game.tournament,
       startTime: dayjs(game.start_time).toDate(),
       endTime: game.end_time ? dayjs(game.end_time).toDate() : undefined
     },
     update: {
       moves: game.length,
+      tournament: game.tournament,
       black: {
         connectOrCreate: {
           where: { name: game.black.name },

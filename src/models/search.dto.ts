@@ -25,6 +25,7 @@ export const SearchItemResponseSchema = z.object({
   start_time: z.coerce.date(),
   end_time: z.coerce.date().nullable(),
   title: z.string(),
+  tournament: z.string().optional(),
   moves: z.number().int(),
   black: SearchItemPlayerSchema,
   white: SearchItemPlayerSchema

@@ -39,7 +39,7 @@
   },
   "dependencies": {
     "@hono-rate-limiter/cloudflare": "^0.2.2",
-    "@mito-shogi/tsshogi-jsa": "^0.2.0",
+    "@mito-shogi/tsshogi-jsa": "^0.2.2",
     "@prisma/adapter-d1": "^6.16.1",
     "@prisma/client": "^6.16.1",
     "@zodios/core": "^10.9.6",

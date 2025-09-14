@@ -43,10 +43,11 @@ app.openapi(
       }
     })
     const { games } = decodeGameList(Buffer.from(buffer))
+    console.log(games)
     c.executionCtx.waitUntil(Promise.all(games.map((game) => upsertGame(c.env, game))))
-    const result = SearchListResponseSchema.safeParse({ games })
+    const result = SearchListResponseSchema.safeParse({ games, count: games.length })
     if (!result.success) {
-      throw new HTTPException(400, { message: result.error.message })
+      throw result.error
     }
     return c.json(result.data, 200)
   }

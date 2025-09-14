@@ -13,7 +13,7 @@ export const GameSchema = z.object({
     description: '開始時刻',
     example: '2025-09-18T01:00:00.000Z'
   }),
-  endTime: z.coerce.date().optional().openapi({
+  endTime: z.coerce.date().nullable().openapi({
     description: '終了時刻（進行中の場合は未設定）',
     example: '2025-09-13T16:30:00Z'
   }),
@@ -29,15 +29,15 @@ export const GameSchema = z.object({
     description: '後手番の対局者',
     example: '高橋 佑二郎'
   }),
-  timeLimit: z.number().int().optional().openapi({
+  timeLimit: z.number().int().nullable().openapi({
     description: '持ち時間（秒）',
     example: 3600
   }),
-  tournament: z.string().nonempty().optional().openapi({
+  tournament: z.string().nonempty().nullable().openapi({
     description: '棋戦',
     example: '竜王戦'
   }),
-  location: z.string().optional().openapi({
+  location: z.string().nullable().openapi({
     description: '対局場所',
     example: '東京・将棋会館'
   })
