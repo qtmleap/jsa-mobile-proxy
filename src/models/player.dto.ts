@@ -14,5 +14,6 @@ export const PlayerSchema = z
     name: v.name,
     count: v._count
   }))
+  .openapi('PlayerSchema')
 
 export type Player = z.infer<typeof PlayerSchema>

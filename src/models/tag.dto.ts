@@ -11,5 +11,6 @@ export const TagSchema = z
     name: v.name,
     count: v._count.games
   }))
+  .openapi('TagSchema')
 
 export type Tag = z.infer<typeof TagSchema>
