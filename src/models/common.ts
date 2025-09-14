@@ -20,18 +20,6 @@ export const PaginatedSchema = <T extends ZodType>(S: T) =>
       limit: z.number().int().min(1).openapi({
         description: '1ページあたりの件数',
         example: 20
-      }),
-      totalPages: z.number().int().min(1).openapi({
-        description: '総ページ数',
-        example: 7
-      }),
-      hasNext: z.boolean().openapi({
-        description: '次のページがあるかどうか',
-        example: true
-      }),
-      hasPrev: z.boolean().openapi({
-        description: '前のページがあるかどうか',
-        example: false
       })
     })
     .openapi('PaginatedSchema')

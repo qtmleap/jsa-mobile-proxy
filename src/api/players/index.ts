@@ -1,9 +1,8 @@
 import { createRoute, OpenAPIHono } from '@hono/zod-openapi'
-import { cache } from 'hono/cache'
 import { HTTPException } from 'hono/http-exception'
 import type { JwtVariables } from 'hono/jwt'
-import { ListSchema } from '@/models/common'
-import { PlayerSchema } from '@/models/player.dto'
+import { ListSchema, PaginatedSchema } from '@/models/common'
+import { PlayerRequestQuerySchema, PlayerSchema } from '@/models/player.dto'
 import type { Env } from '@/utils/bindings'
 
 const app = new OpenAPIHono<{ Bindings: Env; Variables: JwtVariables }>()
@@ -13,17 +12,17 @@ app.openapi(
     method: 'get',
     path: '/',
     tags: ['Players'],
-    middleware: [cache({ cacheName: 'players', cacheControl: 'public, max-age=86400' })],
+    // middleware: [cache({ cacheName: 'players', cacheControl: 'public, max-age=86400' })],
     summary: 'Search Player List',
     description: 'Search Player List',
     request: {
-      // query: SearchListRequestSchema
+      query: PlayerRequestQuerySchema
     },
     responses: {
       200: {
         content: {
           'application/json': {
-            schema: ListSchema(PlayerSchema)
+            schema: PaginatedSchema(PlayerSchema)
           }
         },
         description: 'プレイヤー一覧'
@@ -31,24 +30,43 @@ app.openapi(
     }
   }),
   async (c) => {
-    const result = ListSchema(PlayerSchema).safeParse(
-      await c.env.PRISMA.player.findMany({
-        orderBy: { name: 'desc' },
-        include: {
-          _count: {
-            select: {
-              blackGames: true,
-              whiteGames: true
-            }
+    const { page, limit } = c.req.valid('query')
+
+    // データと総件数を並行取得
+    const players = await c.env.PRISMA.player.findMany({
+      orderBy: { name: 'asc' },
+      take: limit,
+      skip: (page - 1) * limit,
+      include: {
+        _count: {
+          select: {
+            blackGames: true,
+            whiteGames: true
           }
         }
-      })
+      }
+    })
+
+    const result = ListSchema(PlayerSchema).safeParse(
+      players
+        .map((player) => ({
+          name: player.name,
+          count: player._count.blackGames + player._count.whiteGames
+        }))
+        .filter((player) => player.count >= 5)
+        .sort((a, b) => b.count - a.count)
     )
     if (!result.success) {
       throw new HTTPException(500, { message: result.error.message })
     }
+
     return c.json(
-      result.data.filter((result) => result.count >= 5).sort((a, b) => b.count - a.count),
+      {
+        results: result.data,
+        count: result.data.length,
+        page: page,
+        limit: limit
+      },
       200
     )
   }
