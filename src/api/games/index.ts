@@ -1,6 +1,6 @@
-import { createRoute, OpenAPIHono } from '@hono/zod-openapi'
+import { createRoute, OpenAPIHono, z } from '@hono/zod-openapi'
 import { authJWT } from '@/middleware/auth'
-import { ListSchema, PaginatedSchema } from '@/models/common'
+import { ListSchema } from '@/models/common'
 import { GameRequestParamsSchema, GameRequestQuerySchema, GameSchema } from '@/models/game.dto'
 import type { Env } from '@/utils/bindings'
 
@@ -27,7 +27,14 @@ app.openapi(
       200: {
         content: {
           'application/json': {
-            schema: PaginatedSchema(GameSchema)
+            schema: z
+              .object({
+                results: z.array(GameSchema),
+                count: z.number().int().nonnegative(),
+                page: z.number().int().positive(),
+                limit: z.number().int().positive()
+              })
+              .openapi('PaginatedGameList')
           }
         },
         description: '直近の棋譜一覧'
@@ -126,26 +133,27 @@ app.openapi(
   }),
   async (c) => {
     const { game_id } = c.req.valid('param')
-    console.log(game_id)
-    const result = GameSchema.safeParse(
-      await c.env.PRISMA.game.findUniqueOrThrow({
-        where: { id: game_id },
-        select: {
-          id: true,
-          moves: true,
-          title: true,
-          startTime: true,
-          endTime: true,
-          blackId: true,
-          whiteId: true,
-          timeLimit: true,
-          tournament: true,
-          location: true,
-          kif: c.env.IS_PREMIUM,
-          tags: true
-        }
-      })
-    )
+    const game = await c.env.PRISMA.game.findUniqueOrThrow({
+      where: { id: game_id },
+      select: {
+        id: true,
+        moves: true,
+        title: true,
+        startTime: true,
+        endTime: true,
+        blackId: true,
+        whiteId: true,
+        timeLimit: true,
+        tournament: true,
+        location: true,
+        kif: c.env.IS_PREMIUM,
+        tags: true
+      }
+    })
+    const result = GameSchema.safeParse({
+      ...game,
+      tags: game.tags.map((tag) => tag.name)
+    })
     if (!result.success) {
       throw result.error
     }
