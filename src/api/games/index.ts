@@ -1,4 +1,5 @@
 import { createRoute, OpenAPIHono, z } from '@hono/zod-openapi'
+import { cache } from 'hono/cache'
 import { authJWT } from '@/middleware/auth'
 import { ListSchema } from '@/models/common'
 import { GameRequestParamsSchema, GameRequestQuerySchema, GameSchema } from '@/models/game.dto'
@@ -17,7 +18,7 @@ app.openapi(
     method: 'get',
     path: '/',
     tags: ['Games'],
-    middleware: [authJWT],
+    middleware: [authJWT, cache({ cacheName: 'games', cacheControl: 'public, max-age=3600' })],
     summary: 'Search Game List',
     description: 'Search Game List',
     request: {
