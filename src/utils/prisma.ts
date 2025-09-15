@@ -11,7 +11,7 @@ import type { Env } from './bindings'
  * @returns
  */
 export const upsertGameInfo = async (env: Env, game: GameInfo, record: Record) => {
-  return env.PRISMA.game.upsert({
+  return await env.PRISMA.game.upsert({
     where: { id: game.info.game_id },
     create: {
       id: game.info.game_id,
@@ -76,7 +76,7 @@ export const upsertGameInfo = async (env: Env, game: GameInfo, record: Record) =
  * @returns
  */
 export const upsertGame = async (env: Env, game: Game) => {
-  return env.PRISMA.game.upsert({
+  return await env.PRISMA.game.upsert({
     where: { id: game.game_id },
     create: {
       id: game.game_id,
@@ -104,6 +104,7 @@ export const upsertGame = async (env: Env, game: Game) => {
     update: {
       moves: game.moves,
       tournament: game.tournament,
+      blackRank: game.black.rank, // 対局時の段級位
       black: {
         connectOrCreate: {
           where: { name: game.black.name },
@@ -116,6 +117,7 @@ export const upsertGame = async (env: Env, game: Game) => {
           create: { name: game.white.name }
         }
       },
+      whiteRank: game.white.rank, // 対局時の段級位
       endTime: game.end_time ? dayjs(game.end_time).toDate() : undefined
     }
   })
