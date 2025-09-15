@@ -18,7 +18,17 @@ app.openapi(
     method: 'get',
     path: '/',
     tags: ['Games'],
-    middleware: [cache({ cacheName: 'games', cacheControl: 'public, max-age=300' }), authJWT],
+    middleware: [
+      cache({
+        cacheName: 'games',
+        wait: true,
+        cacheControl: 'public, s-maxage=300, max-age=0, stale-while-revalidate=60, stale-if-error=86400',
+        keyGenerator: (c) => {
+          return c.req.url
+        }
+      }),
+      authJWT
+    ],
     summary: 'Search Game List',
     description: 'Search Game List',
     request: {
