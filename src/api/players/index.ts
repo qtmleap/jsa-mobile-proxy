@@ -1,7 +1,7 @@
-import { createRoute, OpenAPIHono } from '@hono/zod-openapi'
+import { createRoute, OpenAPIHono, z } from '@hono/zod-openapi'
 import { HTTPException } from 'hono/http-exception'
 import type { JwtVariables } from 'hono/jwt'
-import { ListSchema, PaginatedSchema } from '@/models/common'
+import { ListSchema } from '@/models/common'
 import { PlayerRequestQuerySchema, PlayerSchema } from '@/models/player.dto'
 import type { Env } from '@/utils/bindings'
 
@@ -22,7 +22,14 @@ app.openapi(
       200: {
         content: {
           'application/json': {
-            schema: PaginatedSchema(PlayerSchema)
+            schema: z
+              .object({
+                results: z.array(PlayerSchema),
+                count: z.number().int().nonnegative(),
+                page: z.number().int().positive(),
+                limit: z.number().int().positive()
+              })
+              .openapi('PaginatedPlayerList')
           }
         },
         description: 'プレイヤー一覧'
