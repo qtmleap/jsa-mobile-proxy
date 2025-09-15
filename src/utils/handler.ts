@@ -16,19 +16,20 @@ type GameBuffer = {
  * @param env
  * @param ctx
  */
-const update = async (env: Env, _ctx: ExecutionContext) => {
+const update = async (env: Env, _ctx: ExecutionContext, params: { p1: number; p2: number; p3: number }) => {
   const adapter = new PrismaD1(env.DB)
   env.PRISMA = new PrismaClient({ adapter })
   env.CLIENT = createClient(env)
 
+  // 対局一覧取得
   const { games } = decodeGameList(
     await env.CLIENT.get('/api/index.php', {
       queries: {
         // @ts-ignore
         action: 'search',
-        p1: 0,
-        p2: 200,
-        p3: 2
+        p1: params.p1,
+        p2: params.p2,
+        p3: params.p3
       }
     })
   )
@@ -45,7 +46,11 @@ const update = async (env: Env, _ctx: ExecutionContext) => {
     }))
   )
   // D1に棋譜一覧書き込み
-  await Promise.all(games.map((game) => upsertGame(env, game)))
+  for (const game of games) {
+    await upsertGame(env, game)
+  }
+  // // D1に棋譜一覧書き込み
+  // await Promise.all(games.map((game) => upsertGame(env, game)))
   // D1に棋譜詳細書き込み
   await Promise.all(
     buffers.map((buffer) => {
@@ -76,7 +81,13 @@ const scheduled: ExportedHandlerScheduledHandler = async (
   console.log(`Scheduled event received: ${event.cron}`)
   switch (event.cron) {
     case '*/5 * * * *':
-      ctx.waitUntil(update(env as Env, ctx))
+      ctx.waitUntil(update(env as Env, ctx, { p1: 0, p2: 100, p3: 1 }))
+      break
+    case '0 * * * *':
+      ctx.waitUntil(update(env as Env, ctx, { p1: 0, p2: 200, p3: 2 }))
+      break
+    case '0 21 * * *':
+      ctx.waitUntil(update(env as Env, ctx, { p1: 0, p2: 14000, p3: 3 }))
       break
     default:
       break

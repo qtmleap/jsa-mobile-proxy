@@ -8,7 +8,7 @@ logpush = true
 
 [observability]
 enabled = true
-head_sampling_rate = 0.1
+head_sampling_rate = 1.0
 
 ## JKF形式の棋譜データをKVに保存する
 [[kv_namespaces]]
@@ -28,7 +28,7 @@ database_id = "e103ae8d-9f03-4e70-a091-90ba9acf9e27"
 migrations_dir = "prisma/migrations"
 
 [triggers]
-crons = ['*/5 * * * *', '*/1 * * * *']
+crons = ['*/5 * * * *', '0 * * * *', '0 21 * * *']
 
 [dev]
 ip = "0.0.0.0"
