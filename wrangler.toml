@@ -56,14 +56,14 @@ bucket_name = "jsa-mobile"
 ## D1に棋譜データを保存する
 [[env.prod.d1_databases]]
 binding = "DB"
-database_name = "jsamobile"
-database_id = "e103ae8d-9f03-4e70-a091-90ba9acf9e27"
+database_name = "jsamobile_game_prod"
+database_id = "8e6da10d-f360-4fbc-9e5b-7683cf9d99b8"
 migrations_dir = "prisma/migrations"
 
 [[env.dev.d1_databases]]
 binding = "DB"
-database_name = "jsamobile"
-database_id = "e103ae8d-9f03-4e70-a091-90ba9acf9e27"
+database_name = "jsamobile_game_dev"
+database_id = "78bb50cd-a15a-4677-ab9e-3bb2af27ffa4"
 migrations_dir = "prisma/migrations"
 
 [dev]
