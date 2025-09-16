@@ -11,6 +11,7 @@ minify = true
 routes = [
   { pattern = "jsam.qleap.jp/api/games", custom_domain = false },
   { pattern = "jsam.qleap.jp/api/players", custom_domain = false },
+  { pattern = "jsam.qleap.jp/openapi.json", custom_domain = false },
 ]
 
 [env.dev]
@@ -20,6 +21,7 @@ minify = false
 routes = [
   { pattern = "jsam-dev.qleap.jp/api/games", custom_domain = false },
   { pattern = "jsam-dev.qleap.jp/api/players", custom_domain = false },
+  { pattern = "jsam-dev.qleap.jp/openapi.json", custom_domain = false },
 ]
 
 [env.prod.triggers]
