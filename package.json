@@ -13,6 +13,7 @@
   "scripts": {
     "dev": "wrangler dev src/index.ts --test-scheduled --env dev",
     "predeploy": "bunx tsc --noEmit",
+    "deploy": "wrangler deploy --minify src/index.ts --keep-vars",
     "deploy:dev": "wrangler deploy --minify src/index.ts --keep-vars --env dev",
     "deploy:prod": "wrangler deploy --minify src/index.ts --keep-vars --env prod",
     "prepare": "husky"
