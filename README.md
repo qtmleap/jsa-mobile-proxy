@@ -16,7 +16,7 @@
 
 ### Cron Trigger
 
-- [http://localhost:18787/__scheduled?cron=*/1+*+*+*+*](http://localhost:18787/__scheduled?cron=*/1+*+*+*+*)
+- [http://localhost:18787/__scheduled?cron=*/5+*+*+*+*](http://localhost:18787/__scheduled?cron=*/5+*+*+*+*)
 - [http://localhost:18787/__scheduled?cron=0+*+*+*+*](http://localhost:18787/__scheduled?cron=0+*+*+*+*)
 - [http://localhost:18787/__scheduled?cron=0+21+*+*+*](http://localhost:18787/__scheduled?cron=0+21+*+*+*)
 
