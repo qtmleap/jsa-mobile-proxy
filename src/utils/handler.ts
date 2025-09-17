@@ -49,8 +49,6 @@ const update = async (env: Env, _ctx: ExecutionContext, params: { p1: number; p2
   for (const game of games) {
     await upsertGame(env, game)
   }
-  // // D1に棋譜一覧書き込み
-  // await Promise.all(games.map((game) => upsertGame(env, game)))
   // D1に棋譜詳細書き込み
   await Promise.all(
     buffers.map((buffer) => {
@@ -58,7 +56,6 @@ const update = async (env: Env, _ctx: ExecutionContext, params: { p1: number; p2
       if (record instanceof Error) {
         throw new Error(`Failed to import JSA for game ${buffer.game_id}: ${record.message}`)
       }
-      console.log(`Upserted game ${buffer.game_id}`)
       return upsertGameInfo(env, decodeJSA(buffer.buffer), record)
     })
   )
