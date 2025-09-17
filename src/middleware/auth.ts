@@ -1,8 +1,8 @@
 import type { MiddlewareHandler } from 'hono'
 import { getCookie } from 'hono/cookie'
 import { verify } from 'hono/jwt'
+import { JWTPayloadSchema } from '../models/jwt.dto'
 import type { Env } from '../utils/bindings'
-import { JWTPayloadSchema } from '../utils/jwt'
 
 // オプショナル JWT認証 (JWTがない場合はゲスト扱い)
 export const authJWT: MiddlewareHandler<{ Bindings: Env }> = async (c, next) => {
