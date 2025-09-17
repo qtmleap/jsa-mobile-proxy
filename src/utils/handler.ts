@@ -39,7 +39,9 @@ const update = async (env: Env, _ctx: ExecutionContext, params: { p1: number; p2
         queries: {
           // @ts-ignore
           action: 'shogi',
-          p1: game.game_id
+          p1: game.game_id,
+          p2: 0,
+          p3: 0
         }
       }),
       game_id: game.game_id
