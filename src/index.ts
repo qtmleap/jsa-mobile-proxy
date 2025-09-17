@@ -15,6 +15,7 @@ import type { JwtVariables } from 'hono/jwt'
 import { logger } from 'hono/logger'
 import { secureHeaders } from 'hono/secure-headers'
 import { timeout } from 'hono/timeout'
+import { trimTrailingSlash } from 'hono/trailing-slash'
 import { ZodError } from 'zod'
 import games from './api/games'
 import players from './api/players'
@@ -30,8 +31,9 @@ dayjs.extend(timezone)
 dayjs.extend(isToday)
 dayjs.tz.setDefault('Asia/Tokyo')
 
-const app = new Hono<{ Bindings: Env; Variables: JwtVariables }>({ strict: true })
+const app = new Hono<{ Bindings: Env; Variables: JwtVariables }>({ strict: false })
 
+app.use(trimTrailingSlash())
 app.use('*', async (c: Context<{ Bindings: Env; Variables: JwtVariables }>, next) => {
   const adapter = new PrismaD1(c.env.DB)
   c.env.PRISMA = new PrismaClient({ adapter })
