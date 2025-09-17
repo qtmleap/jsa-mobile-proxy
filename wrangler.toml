@@ -3,6 +3,14 @@ compatibility_date = "2025-09-06"
 send_metrics = true
 compatibility_flags = ["nodejs_compat_v2"]
 logpush = true
+workers_dev = true
+preview_urls = true
+minify = true
+routes = [
+  { pattern = "jsam.qleap.jp/api/games", custom_domain = false },
+  { pattern = "jsam.qleap.jp/api/players", custom_domain = false },
+  { pattern = "jsam.qleap.jp/openapi.json", custom_domain = false },
+]
 
 [env.prod]
 workers_dev = false
@@ -24,17 +32,27 @@ routes = [
   { pattern = "jsam-dev.qleap.jp/openapi.json", custom_domain = false },
 ]
 
+[triggers]
+crons = ['*/5 * * * *', '0 * * * *', '0 21 * * *']
+
 [env.prod.triggers]
 crons = ['*/5 * * * *', '0 * * * *', '0 21 * * *']
 
 [env.dev.triggers]
 crons = ['*/5 * * * *', '0 * * * *', '0 21 * * *']
 
+[observability]
+enabled = true
+
 [env.prod.observability]
 enabled = true
 
 [env.dev.observability]
 enabled = true
+
+[[kv_namespaces]]
+binding = "RATE_LIMITTER"
+id = "60fc87bcd9a443b385b186a67864ec8b"
 
 [[env.prod.kv_namespaces]]
 binding = "RATE_LIMITTER"
@@ -45,6 +63,10 @@ binding = "RATE_LIMITTER"
 id = "60fc87bcd9a443b385b186a67864ec8b"
 
 ## BIN形式の棋譜データをR2に保存する
+[[r2_buckets]]
+binding = "BUCKET"
+bucket_name = "jsa-mobile"
+
 [[env.prod.r2_buckets]]
 binding = "BUCKET"
 bucket_name = "jsa-mobile"
@@ -54,6 +76,12 @@ binding = "BUCKET"
 bucket_name = "jsa-mobile"
 
 ## D1に棋譜データを保存する
+[[d1_databases]]
+binding = "DB"
+database_name = "jsamobile"
+database_id = "e103ae8d-9f03-4e70-a091-90ba9acf9e27"
+migrations_dir = "prisma/migrations"
+
 [[env.prod.d1_databases]]
 binding = "DB"
 database_name = "jsamobile_game_prod"
