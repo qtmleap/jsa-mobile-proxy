@@ -16,7 +16,9 @@
 
 ### Cron Trigger
 
-[http://localhost:28787/__scheduled?cron=*+*+*+*+*](http://localhost:28787/__scheduled?cron=*+*+*+*+*)
+- [http://localhost:18787/__scheduled?cron=*/1+*+*+*+*](http://localhost:18787/__scheduled?cron=*/1+*+*+*+*)
+- [http://localhost:18787/__scheduled?cron=0+*+*+*+*](http://localhost:18787/__scheduled?cron=0+*+*+*+*)
+- [http://localhost:18787/__scheduled?cron=0+21+*+*+*](http://localhost:18787/__scheduled?cron=0+21+*+*+*)
 
 ### 対応フォーマット
 
