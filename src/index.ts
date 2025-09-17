@@ -15,7 +15,6 @@ import type { JwtVariables } from 'hono/jwt'
 import { logger } from 'hono/logger'
 import { secureHeaders } from 'hono/secure-headers'
 import { timeout } from 'hono/timeout'
-import { trimTrailingSlash } from 'hono/trailing-slash'
 import { ZodError } from 'zod'
 import games from './api/games'
 import players from './api/players'
@@ -39,7 +38,6 @@ app.use('*', async (c: Context<{ Bindings: Env; Variables: JwtVariables }>, next
   c.env.CLIENT = createClient(c.env)
   await next()
 })
-app.use(trimTrailingSlash())
 app.use('*', timeout(5000))
 app.use(
   '*',

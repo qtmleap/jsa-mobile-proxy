@@ -79,7 +79,7 @@ app.openapi(
     // データと総件数を並行取得
     const [games, count] = await Promise.all([
       c.env.PRISMA.game.findMany({
-        orderBy: { startTime: 'asc' },
+        orderBy: { startTime: 'desc' },
         take: limit,
         skip: (page - 1) * limit,
         select: {
