@@ -1,7 +1,7 @@
 import type { PrismaClient } from '@prisma/client'
 import type { ZodiosInstance } from '@zodios/core'
+import type { JWTPayload } from '../models/jwt.dto'
 import type { JSAMobileEndpoint } from './client'
-import type { JWTPayload } from './jwt'
 
 export interface Env {
   JSA_MOBILE_USERNAME: string

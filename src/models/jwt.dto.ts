@@ -9,8 +9,8 @@ export const JWTPayloadSchema = z.object({
   iss: z.string().optional(), // Issuer (発行者)
   aud: z.string().optional(), // Audience (対象者)
   // カスタムクレーム
-  uid: z.string(),
-  pid: z.number().int().nonnegative() // Plan ID (0:ゲスト, 1以上:有料プラン)
+  // NOTE: WorkerKitのカスタムクレームと一致させておかないとバグの原因になりうる
+  uid: z.string()
 })
 
 // JWTヘッダー用のスキーマ
