@@ -11,6 +11,7 @@ import type { Env } from './bindings'
  * @returns
  */
 export const upsertGameInfo = async (env: Env, game: GameInfo, record: Record) => {
+  console.log(`Upserting Game Info: ID: ${game.info.game_id}, StartTime: ${game.info.start_time}`)
   return await env.PRISMA.game.upsert({
     where: { id: game.info.game_id },
     create: {
@@ -76,6 +77,7 @@ export const upsertGameInfo = async (env: Env, game: GameInfo, record: Record) =
  * @returns
  */
 export const upsertGame = async (env: Env, game: Game) => {
+  console.log(`Upserting Game: ID: ${game.game_id}, StartTime: ${game.start_time}`)
   return await env.PRISMA.game.upsert({
     where: { id: game.game_id },
     create: {
