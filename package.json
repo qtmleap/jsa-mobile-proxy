@@ -24,7 +24,7 @@
     "@commitlint/cli": "^19.8.1",
     "@commitlint/config-conventional": "^19.8.1",
     "@commitlint/cz-commitlint": "^19.8.1",
-    "@hono/zod-openapi": "1.1.0",
+    "@hono/zod-openapi": "1.1.1",
     "@scalar/hono-api-reference": "^0.9.18",
     "@types/bun": "^1.2.22",
     "@types/lodash": "^4.17.20",
@@ -38,7 +38,7 @@
   },
   "dependencies": {
     "@hono-rate-limiter/cloudflare": "^0.2.2",
-    "@mito-shogi/tsshogi-jsa": "^0.4.0",
+    "@mito-shogi/tsshogi-jsa": "^0.4.1",
     "@prisma/adapter-d1": "^6.16.2",
     "@prisma/client": "^6.16.2",
     "@zodios/core": "^10.9.6",
