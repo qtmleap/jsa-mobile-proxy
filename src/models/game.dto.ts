@@ -40,11 +40,11 @@ export const GameSchema = z
     }),
     kif: z
       .string()
-      .optional()
+      .nullable()
       .openapi({
         description: 'JKF形式の棋譜データ'
       })
-      .transform((v) => (v === undefined ? undefined : JSON.parse(v))),
+      .transform((v) => (v === null ? null : JSON.parse(v))),
     tournament: TournamentEnum.nullable().openapi({
       description: '棋戦',
       example: '竜王戦'
