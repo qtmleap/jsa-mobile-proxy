@@ -33,6 +33,10 @@ const update = async (env: Env, _ctx: ExecutionContext, params: { p1: number; p2
       }
     })
   )
+  // D1に対局一覧書き込み
+  for (const game of games) {
+    await upsertGame(env, game)
+  }
   const buffers: GameBuffer[] = await Promise.all(
     games.map(async (game) => ({
       buffer: await env.CLIENT.get(`/api/index.php`, {
@@ -47,10 +51,6 @@ const update = async (env: Env, _ctx: ExecutionContext, params: { p1: number; p2
       game_id: game.game_id
     }))
   )
-  // D1に棋譜一覧書き込み
-  for (const game of games) {
-    await upsertGame(env, game)
-  }
   // D1に棋譜詳細書き込み
   await Promise.all(
     buffers.map((buffer) => {
