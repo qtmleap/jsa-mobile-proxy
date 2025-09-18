@@ -9,8 +9,8 @@ export const JWTPayloadSchema = z.object({
   iss: z.string().optional(), // Issuer (発行者)
   aud: z.string().optional(), // Audience (対象者)
   // カスタムクレーム
-  // NOTE: WorkerKitのカスタムクレームと一致させておかないとバグの原因になりうる
-  uid: z.string()
+  uid: z.string(), // Firebase User Id
+  pid: z.string().optional()
 })
 
 // JWTヘッダー用のスキーマ
