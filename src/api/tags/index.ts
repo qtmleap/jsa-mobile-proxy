@@ -2,7 +2,7 @@ import { createRoute, OpenAPIHono } from '@hono/zod-openapi'
 import { cache } from 'hono/cache'
 import { HTTPException } from 'hono/http-exception'
 import type { JwtVariables } from 'hono/jwt'
-import { ListSchema } from '@/models/common'
+import { ListSchema } from '@/models/common.dto'
 import { TagSchema } from '@/models/tag.dto'
 import type { Env } from '@/utils/bindings'
 

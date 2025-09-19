@@ -44,7 +44,13 @@ app.use('*', timeout(5000))
 app.use(
   '*',
   cors({
-    origin: ['http://localhost:5173', 'https://jsam.qleap.jp', 'https://jsam-dev.qleap.jp'],
+    origin: [
+      'http://localhost:5173',
+      'https://jsam.qleap.jp',
+      'https://jsam-dev.qleap.jp',
+      'https://jsamobile-540f2.web.app',
+      'https://jsamobile-540f2.firebaseapp.com'
+    ],
     credentials: true,
     maxAge: 86400
   })
