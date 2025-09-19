@@ -1,7 +1,7 @@
 import { createRoute, OpenAPIHono, z } from '@hono/zod-openapi'
 import { HTTPException } from 'hono/http-exception'
 import type { JwtVariables } from 'hono/jwt'
-import { ListSchema } from '@/models/common'
+import { ListSchema } from '@/models/common.dto'
 import { PlayerRequestQuerySchema, PlayerSchema } from '@/models/player.dto'
 import type { Env } from '@/utils/bindings'
 

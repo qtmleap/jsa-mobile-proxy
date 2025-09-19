@@ -38,13 +38,9 @@ export const GameSchema = z
       description: '持ち時間（秒）',
       example: 3600
     }),
-    kif: z
-      .string()
-      .nullable()
-      .openapi({
-        description: 'JKF形式の棋譜データ'
-      })
-      .transform((v) => (v === null ? null : JSON.parse(v))),
+    kif: z.object({}).passthrough().nullish().openapi({
+      description: 'JKF形式の棋譜データ'
+    }),
     tournament: TournamentEnum.nullable().openapi({
       description: '棋戦',
       example: '竜王戦'

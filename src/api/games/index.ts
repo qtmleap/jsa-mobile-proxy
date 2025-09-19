@@ -1,8 +1,11 @@
 import { createRoute, OpenAPIHono, z } from '@hono/zod-openapi'
 import { cache } from 'hono/cache'
+import { HTTPException } from 'hono/http-exception'
+import { exportJKF, importJKFString, type Record } from 'tsshogi'
 import { authJWT } from '@/middleware/auth'
-import { ListSchema } from '@/models/common'
+import { ListSchema } from '@/models/common.dto'
 import { GameRequestParamsSchema, GameRequestQuerySchema, GameSchema } from '@/models/game.dto'
+import { JKFSchema } from '@/models/jkf.dto'
 import type { Env } from '@/utils/bindings'
 
 const app = new OpenAPIHono<{ Bindings: Env }>({
@@ -158,12 +161,28 @@ app.openapi(
         timeLimit: true,
         tournament: true,
         location: true,
-        kif: c.env.IS_PREMIUM,
+        kif: true,
         tags: true
       }
     })
+    if (game.kif === null) {
+      const result = GameSchema.safeParse({
+        ...game,
+        kif: null,
+        tags: game.tags.map((tag) => tag.name)
+      })
+      if (!result.success) {
+        throw result.error
+      }
+      return c.json(result.data, 200)
+    }
+    const record: Record | Error = importJKFString(game.kif)
+    if (record instanceof Error) {
+      throw new HTTPException(500, { message: 'Failed to parse KIF data' })
+    }
     const result = GameSchema.safeParse({
       ...game,
+      kif: JKFSchema.parse(exportJKF(record)),
       tags: game.tags.map((tag) => tag.name)
     })
     if (!result.success) {
