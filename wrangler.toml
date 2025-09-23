@@ -46,9 +46,11 @@ enabled = true
 
 [env.prod.observability]
 enabled = true
+head_sampling_rate = 1
 
 [env.dev.observability]
 enabled = true
+head_sampling_rate = 1
 
 [[kv_namespaces]]
 binding = "RATE_LIMITTER"

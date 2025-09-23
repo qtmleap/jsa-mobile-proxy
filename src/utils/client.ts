@@ -5,7 +5,9 @@ import { SearchRequestSchema } from '@/models/search.dto'
 import type { Env } from './bindings'
 
 export enum EventType {
-  TODAY = '対局日'
+  TODAY = '対局日',
+  GAME_END = '対局終了',
+  GAME_START = '対局開始'
 }
 
 const endpoints = makeApi([
@@ -102,6 +104,6 @@ export const createClient: ClientFactory = (env: Env) => {
       }
     }
   })
-  client.use('post', '/api/webhook/games', pluginBaseURL(env.BASE_URL))
+  client.use('post', '/api/webhook/games', pluginBaseURL(''))
   return client
 }
