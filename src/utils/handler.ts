@@ -1,15 +1,16 @@
-import { decodeGameList, decodeJSA, importJSA } from '@mito-shogi/tsshogi-jsa'
 import { PrismaD1 } from '@prisma/adapter-d1'
 import { PrismaClient } from '@prisma/client'
-import type { Record } from 'tsshogi'
 import type { Env } from './bindings'
-import { createClient } from './client'
-import { upsertGame, upsertGameInfo } from './prisma'
-
-type GameBuffer = {
-  buffer: Buffer
-  game_id: number
-}
+import { createClient, EventType } from './client'
+import {
+  D1Write,
+  D1WriteList,
+  type GameBuffer,
+  GetFinishedGameList,
+  GetGameBufferList,
+  GetGameList,
+  R2Write
+} from './service'
 
 /**
  * Cron Triggerでの実行の場合には初期化が呼ばれずPRISMAとCLIENTがundefinedになっているみたい
@@ -17,59 +18,67 @@ type GameBuffer = {
  * @param ctx
  */
 const update = async (env: Env, _ctx: ExecutionContext, params: { p1: number; p2: number; p3: number }) => {
+  const buffers: GameBuffer[] = await GetGameBufferList(env, params)
+  await D1WriteList(env, buffers)
+  await D1Write(env, buffers)
+  await R2Write(env, buffers)
+}
+
+namespace PushService {
+  /**
+   * 対局終了通知
+   */
+  export const game_end = async (env: Env) => {
+    const games = await GetFinishedGameList(env)
+    const messages = games.flatMap((game) =>
+      [game.black, game.white].map((player) => ({
+        notification: {
+          title: '対局終了通知',
+          body: `${player.displayText}の対局が終了しました`
+        },
+        topic: {
+          key: player.name,
+          value: EventType.TODAY
+        }
+      }))
+    )
+    console.log(messages)
+    await env.CLIENT.post('/api/webhook/games', {
+      messages: messages
+    })
+  }
+
+  /**
+   * 当日の対局通知
+   * @param env
+   */
+  export const today = async (env: Env) => {
+    const games = await GetGameList(env, { p1: 0, p2: 100, p3: 1 })
+    const messages = games.flatMap((game) =>
+      [game.black, game.white].map((player) => ({
+        notification: {
+          title: '対局日通知',
+          body: `本日は${player.displayText}の対局日です`
+        },
+        topic: {
+          key: player.name,
+          value: EventType.TODAY
+        }
+      }))
+    )
+    console.log(messages)
+    await env.CLIENT.post('/api/webhook/games', {
+      messages: messages
+    })
+  }
+}
+
+const setup_env = (env: Env) => {
+  console.log('Setup Environment for Scheduled Event')
   const adapter = new PrismaD1(env.DB)
   env.PRISMA = new PrismaClient({ adapter })
   env.CLIENT = createClient(env)
-
-  // 対局一覧取得
-  const { games } = decodeGameList(
-    await env.CLIENT.get('/api/index.php', {
-      queries: {
-        // @ts-ignore
-        action: 'search',
-        p1: params.p1,
-        p2: params.p2,
-        p3: params.p3
-      }
-    })
-  )
-  // D1に対局一覧書き込み
-  for (const game of games) {
-    await upsertGame(env, game)
-  }
-  const buffers: GameBuffer[] = await Promise.all(
-    games.map(async (game) => ({
-      buffer: await env.CLIENT.get(`/api/index.php`, {
-        queries: {
-          // @ts-ignore
-          action: 'shogi',
-          p1: game.game_id,
-          p2: 0,
-          p3: 0
-        }
-      }),
-      game_id: game.game_id
-    }))
-  )
-  // D1に棋譜詳細書き込み
-  await Promise.all(
-    buffers.map((buffer) => {
-      const record: Record | Error = importJSA(buffer.buffer)
-      if (record instanceof Error) {
-        throw new Error(`Failed to import JSA for game ${buffer.game_id}: ${record.message}`)
-      }
-      return upsertGameInfo(env, decodeJSA(buffer.buffer), record)
-    })
-  )
-  // R2にバイナリ保存
-  await Promise.all(
-    buffers.map((buffer) => env.BUCKET.put(`bin/${buffer.game_id}.bin`, buffer.buffer), {
-      httpMetadata: {
-        contentType: 'application/octet-stream',
-        contentDisposition: 'attachment'
-      }
-    })
-  )
+  return
 }
 
 const scheduled: ExportedHandlerScheduledHandler = async (
@@ -78,15 +87,33 @@ const scheduled: ExportedHandlerScheduledHandler = async (
   ctx: ExecutionContext
 ) => {
   console.log(`Scheduled event received: ${event.cron}`)
+  setup_env(env as Env)
   switch (event.cron) {
+    // 五分毎に対局の最新情報を取得する
     case '*/5 * * * *':
-      ctx.waitUntil(update(env as Env, ctx, { p1: 0, p2: 100, p3: 1 }))
+      {
+        ctx.waitUntil(PushService.today(env as Env))
+        ctx.waitUntil(PushService.game_end(env as Env))
+        ctx.waitUntil(update(env as Env, ctx, { p1: 0, p2: 100, p3: 1 }))
+      }
       break
+    // 一時間に一回過去二週間の対局情報を取得する
     case '0 * * * *':
-      ctx.waitUntil(update(env as Env, ctx, { p1: 0, p2: 200, p3: 2 }))
+      {
+        ctx.waitUntil(update(env as Env, ctx, { p1: 0, p2: 200, p3: 2 }))
+      }
       break
+    // 午前六時に当日の対局を取得
     case '0 21 * * *':
-      ctx.waitUntil(update(env as Env, ctx, { p1: 0, p2: 14000, p3: 3 }))
+      {
+        ctx.waitUntil(update(env as Env, ctx, { p1: 0, p2: 100, p3: 1 }))
+      }
+      break
+    // 午前八時に当日の対局を取得
+    case '0 23 * * *':
+      {
+        ctx.waitUntil(PushService.today(env as Env))
+      }
       break
     default:
       break

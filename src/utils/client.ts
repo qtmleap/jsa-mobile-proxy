@@ -3,6 +3,10 @@ import z from 'zod'
 import { SearchRequestSchema } from '@/models/search.dto'
 import type { Env } from './bindings'
 
+export enum EventType {
+  TODAY = '対局日'
+}
+
 const endpoints = makeApi([
   {
     method: 'get',
@@ -15,6 +19,31 @@ const endpoints = makeApi([
       }
     ],
     response: z.instanceof(Buffer)
+  },
+  {
+    method: 'post',
+    path: '/api/webhook/games',
+    parameters: [
+      {
+        name: 'body',
+        type: 'Body',
+        schema: z.object({
+          messages: z.array(
+            z.object({
+              notification: z.object({
+                title: z.string().nonempty(),
+                body: z.string().nonempty()
+              }),
+              topic: z.object({
+                key: z.string().nonempty(),
+                value: z.enum(EventType)
+              })
+            })
+          )
+        })
+      }
+    ],
+    response: z.object({})
   }
 ])
 export type JSAMobileEndpoint = typeof endpoints
