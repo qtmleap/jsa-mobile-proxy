@@ -30,6 +30,7 @@ namespace PushService {
    * 対局終了通知
    */
   export const game_end = async (env: Env) => {
+    console.log('PushService.game_end')
     const games = await GetFinishedGameList(env)
     const messages = uniqBy(
       games.flatMap((game) =>
@@ -40,15 +41,24 @@ namespace PushService {
           },
           topic: {
             key: player.name,
-            event: EventType.TODAY
+            event: EventType.GAME_END
           }
         }))
       ),
       'topic.key'
     )
-    await env.CLIENT.post('/api/webhook/games', {
-      messages: messages
-    })
+    console.log(messages)
+    if (messages.length !== 0) {
+      try {
+        await env.CLIENT.post('/api/webhook/games', {
+          messages: messages
+        })
+      } catch (error) {
+        console.error(error)
+      }
+    } else {
+      console.log('No messages to send')
+    }
   }
 
   /**
@@ -56,6 +66,7 @@ namespace PushService {
    * @param env
    */
   export const today = async (env: Env) => {
+    console.log('PushService.today')
     const games = await GetGameList(env, { p1: 0, p2: 100, p3: 1 })
     const messages = uniqBy(
       games.flatMap((game) =>
@@ -72,9 +83,18 @@ namespace PushService {
       ),
       'topic.key'
     )
-    await env.CLIENT.post('/api/webhook/games', {
-      messages: messages
-    })
+    console.log(messages)
+    if (messages.length !== 0) {
+      try {
+        await env.CLIENT.post('/api/webhook/games', {
+          messages: messages
+        })
+      } catch (error) {
+        console.error(error)
+      }
+    } else {
+      console.log('No messages to send')
+    }
   }
 }
 
@@ -97,21 +117,27 @@ const scheduled: ExportedHandlerScheduledHandler = async (
     // 五分毎に対局の最新情報を取得する
     case '*/5 * * * *':
       {
-        ctx.waitUntil(PushService.today(env as Env))
-        ctx.waitUntil(PushService.game_end(env as Env))
-        ctx.waitUntil(update(env as Env, ctx, { p1: 0, p2: 100, p3: 1 }))
+        const params = { p1: 0, p2: 100, p3: 1 }
+        const games = await GetGameList(env as Env, params)
+        if (games.length !== 0) {
+          ctx.waitUntil(PushService.today(env as Env))
+          ctx.waitUntil(PushService.game_end(env as Env))
+          ctx.waitUntil(update(env as Env, ctx, params))
+        }
       }
       break
     // 一時間に一回過去二週間の対局情報を取得する
     case '0 * * * *':
       {
-        ctx.waitUntil(update(env as Env, ctx, { p1: 0, p2: 200, p3: 2 }))
+        const params = { p1: 0, p2: 200, p3: 2 }
+        ctx.waitUntil(update(env as Env, ctx, params))
       }
       break
     // 午前六時に当日の対局を取得
     case '0 21 * * *':
       {
-        ctx.waitUntil(update(env as Env, ctx, { p1: 0, p2: 100, p3: 1 }))
+        const params = { p1: 0, p2: 100, p3: 1 }
+        ctx.waitUntil(update(env as Env, ctx, params))
       }
       break
     // 午前八時に当日の対局を取得
@@ -121,6 +147,9 @@ const scheduled: ExportedHandlerScheduledHandler = async (
       }
       break
     default:
+      {
+        ctx.waitUntil(PushService.today(env as Env))
+      }
       break
   }
 }
