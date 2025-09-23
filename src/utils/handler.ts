@@ -13,7 +13,7 @@ import {
 } from './service'
 
 /**
- * Cron Triggerでの実行の場合には初期化が呼ばれずPRISMAとCLIENTがundefinedになっているみたい
+ * データ保存と書き込み
  * @param env
  * @param ctx
  */
@@ -31,14 +31,14 @@ namespace PushService {
   export const game_end = async (env: Env) => {
     const games = await GetFinishedGameList(env)
     const messages = games.flatMap((game) =>
-      [game.black, game.white].map((player) => ({
+      Array.from(new Set([game.black, game.white])).map((player) => ({
         notification: {
           title: '対局終了通知',
           body: `${player.displayText}の対局が終了しました`
         },
         topic: {
           key: player.name,
-          value: EventType.TODAY
+          event: EventType.TODAY
         }
       }))
     )
@@ -55,21 +55,29 @@ namespace PushService {
   export const today = async (env: Env) => {
     const games = await GetGameList(env, { p1: 0, p2: 100, p3: 1 })
     const messages = games.flatMap((game) =>
-      [game.black, game.white].map((player) => ({
+      Array.from(new Set([game.black, game.white])).map((player) => ({
         notification: {
           title: '対局日通知',
           body: `本日は${player.displayText}の対局日です`
         },
         topic: {
           key: player.name,
-          value: EventType.TODAY
+          event: EventType.TODAY
         }
       }))
     )
-    console.log(messages)
-    await env.CLIENT.post('/api/webhook/games', {
-      messages: messages
+    console.log(JSON.stringify({ messages: messages }, null, 2))
+    // await env.CLIENT.post('/api/webhook/games', {
+    //   messages: messages
+    // })
+    const response = await fetch('https://jsa-mobile-api-dev.lemonandchan.workers.dev/api/webhook/games', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({ messages: messages })
     })
+    console.log(response.status, await response.json())
   }
 }
 

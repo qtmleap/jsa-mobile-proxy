@@ -1,6 +1,5 @@
 import type { PrismaClient } from '@prisma/client'
 import type { ZodiosInstance } from '@zodios/core'
-import type { JWTPayload } from '../models/jwt.dto'
 import type { JSAMobileEndpoint } from './client'
 
 export interface Env {
@@ -15,12 +14,5 @@ export interface Env {
   RATE_LIMITTER: KVNamespace
   PLAN_ID: number
   IS_PREMIUM: boolean
-}
-
-// Honoのコンテキスト変数の型定義
-declare module 'hono' {
-  interface ContextVariableMap {
-    jwtPayload: JWTPayload | null
-    isGuest: boolean
-  }
+  BASE_URL: string
 }
