@@ -42,6 +42,7 @@
     "@prisma/adapter-d1": "^6.16.2",
     "@prisma/client": "^6.16.2",
     "@zodios/core": "^10.9.6",
+    "@zodios/plugins": "^10.6.0",
     "axios": "^1.12.2",
     "dayjs": "^1.11.18",
     "hono": "^4.9.7",
