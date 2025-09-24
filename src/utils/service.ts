@@ -96,7 +96,6 @@ export const GetGameBufferList = async (
  * @param buffers
  */
 export const R2Write = async (env: Env, buffers: GameBuffer[]) => {
-  console.log('Writing to R2...')
   await Promise.all(
     buffers.map((buffer) => env.BUCKET.put(`bin/${buffer.game.game_id}.bin`, buffer.buffer), {
       httpMetadata: {
@@ -105,7 +104,6 @@ export const R2Write = async (env: Env, buffers: GameBuffer[]) => {
       }
     })
   )
-  console.log('Write to R2 completed.')
 }
 
 /**
@@ -114,7 +112,6 @@ export const R2Write = async (env: Env, buffers: GameBuffer[]) => {
  * @param games
  */
 export const D1WriteList = async (env: Env, games: GameBuffer[]) => {
-  console.log('Writing to D1...')
   for (const game of games.map((game) => game.game)) {
     await env.PRISMA.game.upsert({
       where: { id: game.game_id },
@@ -162,7 +159,6 @@ export const D1WriteList = async (env: Env, games: GameBuffer[]) => {
       }
     })
   }
-  console.log('Write to D1 completed.')
 }
 
 /**
@@ -171,7 +167,6 @@ export const D1WriteList = async (env: Env, games: GameBuffer[]) => {
  * @param games
  */
 export const D1Write = async (env: Env, buffers: GameBuffer[]) => {
-  console.log('Writing to D1...')
   for (const buffer of buffers) {
     const game: GameInfo = decodeJSA(buffer.buffer)
     const record: Record | Error = importJSA(buffer.buffer)
@@ -234,6 +229,5 @@ export const D1Write = async (env: Env, buffers: GameBuffer[]) => {
           : undefined
       }
     })
-    console.log('Write to D1 completed.')
   }
 }
