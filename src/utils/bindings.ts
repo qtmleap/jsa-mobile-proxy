@@ -13,6 +13,6 @@ export interface Env {
   CLIENT: ZodiosInstance<JSAMobileEndpoint>
   RATE_LIMITTER: KVNamespace
   PLAN_ID: number
-  IS_PREMIUM: boolean
-  BASE_URL: string
+  CF_ACCESS_CLIENT_ID: string
+  CF_ACCESS_CLIENT_SECRET: string
 }

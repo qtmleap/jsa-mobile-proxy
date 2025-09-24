@@ -47,7 +47,7 @@ namespace PushService {
       ),
       'topic.key'
     )
-    console.log(messages)
+    console.log(JSON.stringify(messages, null, 2))
     if (messages.length !== 0) {
       try {
         await env.CLIENT.post('/api/webhook/games', {
@@ -83,7 +83,7 @@ namespace PushService {
       ),
       'topic.key'
     )
-    console.log(messages)
+    console.log(JSON.stringify(messages, null, 2))
     if (messages.length !== 0) {
       try {
         await env.CLIENT.post('/api/webhook/games', {
@@ -114,16 +114,19 @@ const scheduled: ExportedHandlerScheduledHandler = async (
   console.log(`Scheduled event received: ${event.cron}`)
   setup_env(env as Env)
   switch (event.cron) {
+    case '*/1 * * * *': {
+      const params = { p1: 0, p2: 100, p3: 1 }
+      ctx.waitUntil(update(env as Env, ctx, params))
+      break
+    }
     // 五分毎に対局の最新情報を取得する
     case '*/5 * * * *':
       {
-        const params = { p1: 0, p2: 100, p3: 1 }
-        const games = await GetGameList(env as Env, params)
-        if (games.length !== 0) {
-          ctx.waitUntil(PushService.today(env as Env))
-          ctx.waitUntil(PushService.game_end(env as Env))
-          ctx.waitUntil(update(env as Env, ctx, params))
-        }
+        // const params = { p1: 0, p2: 100, p3: 1 }
+        // const games = await GetGameList(env as Env, params)
+        // if (games.length !== 0) {
+        //   ctx.waitUntil(update(env as Env, ctx, params))
+        // }
       }
       break
     // 一時間に一回過去二週間の対局情報を取得する
