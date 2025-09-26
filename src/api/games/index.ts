@@ -165,6 +165,10 @@ app.openapi(
         tags: true
       }
     })
+    // 終了していない対局は閲覧禁止
+    if (game.endTime === null) {
+      throw new HTTPException(403, { message: 'Forbidden' })
+    }
     if (game.kif === null) {
       const result = GameSchema.safeParse({
         ...game,
