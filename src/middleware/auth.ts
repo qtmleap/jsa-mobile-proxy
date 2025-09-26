@@ -24,10 +24,8 @@ export const authJWT: MiddlewareHandler<{ Bindings: Env }> = async (c, next) => 
       }
     })()
     c.env.PLAN_ID = pid
-    c.env.IS_PREMIUM = pid > 0
   } else {
     c.env.PLAN_ID = 0
-    c.env.IS_PREMIUM = false
   }
   await next()
 }
