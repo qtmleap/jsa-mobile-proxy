@@ -117,6 +117,7 @@ const scheduled: ExportedHandlerScheduledHandler = async (
     case '*/1 * * * *': {
       const params = { p1: 0, p2: 100, p3: 1 }
       ctx.waitUntil(update(env as Env, ctx, params))
+      ctx.waitUntil(PushService.game_end(env as Env))
       break
     }
     // 五分毎に対局の最新情報を取得する
