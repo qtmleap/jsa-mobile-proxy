@@ -13,11 +13,9 @@ export const authJWT: MiddlewareHandler<{ Bindings: Env }> = async (c, next) => 
     const payload = JWTPayloadSchema.parse(await verify(token, c.env.JWT_SECRET_KEY, 'HS256'))
     const pid: number = (() => {
       switch (payload.pid) {
-        case undefined:
-          return 0
-        case 't30upkmxhokjfg':
+        case c.env.PLAN_ID_LITE:
           return 1
-        case 't30voxhsglpzng':
+        case c.env.PLAN_ID_BASIC:
           return 2
         default:
           return 0
