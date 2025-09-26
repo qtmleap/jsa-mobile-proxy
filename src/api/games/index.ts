@@ -170,9 +170,11 @@ app.openapi(
     if (game.endTime === null) {
       throw new HTTPException(403, { message: 'Forbidden' })
     }
+    // フリープランは一ヶ月より前は閲覧禁止
     if (dayjs(game.startTime).isBefore(dayjs().subtract(1, 'month')) && c.env.PLAN_ID <= 0) {
       throw new HTTPException(403, { message: 'Forbidden' })
     }
+    // ライトプランは一年より前は閲覧禁止
     if (dayjs(game.startTime).isBefore(dayjs().subtract(1, 'year')) && c.env.PLAN_ID <= 1) {
       throw new HTTPException(403, { message: 'Forbidden' })
     }
