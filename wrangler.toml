@@ -29,6 +29,16 @@ routes = [
   { pattern = "jsam-dev.qleap.jp/openapi.json", custom_domain = false },
 ]
 
+[env.prod.vars]
+PLAN_ID_FREE = "t565tjd2rhynme"
+PLAN_ID_LITE = "t30upkmxhokjfg"
+PLAN_ID_BASIC = "t30voxhsglpzng"
+
+[env.dev.vars]
+PLAN_ID_FREE = "t565tjd2rhynme"
+PLAN_ID_LITE = "t30upkmxhokjfg"
+PLAN_ID_BASIC = "t30voxhsglpzng"
+
 [triggers]
 crons = ['*/5 * * * *', '0 * * * *', '0 21 * * *']
 
