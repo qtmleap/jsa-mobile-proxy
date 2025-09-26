@@ -17,4 +17,5 @@ export interface Env {
   CF_ACCESS_CLIENT_SECRET: string
   PLAN_ID_LITE: string
   PLAN_ID_BASIC: string
+  BASE_URL: string
 }

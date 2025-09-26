@@ -30,11 +30,13 @@ routes = [
 ]
 
 [env.prod.vars]
+BASE_URL = "https://jsam.qleap.jp"
 PLAN_ID_FREE = "t565tjd2rhynme"
 PLAN_ID_LITE = "t30upkmxhokjfg"
 PLAN_ID_BASIC = "t30voxhsglpzng"
 
 [env.dev.vars]
+BASE_URL = "https://jsam-dev.qleap.jp"
 PLAN_ID_FREE = "t565tjd2rhynme"
 PLAN_ID_LITE = "t30upkmxhokjfg"
 PLAN_ID_BASIC = "t30voxhsglpzng"
