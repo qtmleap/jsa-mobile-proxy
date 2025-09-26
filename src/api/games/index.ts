@@ -144,6 +144,15 @@ app.openapi(
           }
         },
         description: '対局詳細'
+      },
+      401: {
+        description: 'Unauthorized'
+      },
+      403: {
+        description: 'Forbidden'
+      },
+      404: {
+        description: 'Not Found'
       }
     }
   }),
