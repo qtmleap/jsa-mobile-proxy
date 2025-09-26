@@ -12,7 +12,7 @@ routes = [
 ]
 
 [env.prod]
-workers_dev = false
+workers_dev = true
 preview_urls = false
 minify = true
 routes = [
