@@ -20,18 +20,18 @@
   },
   "devDependencies": {
     "@biomejs/biome": "^2.2.4",
-    "@cloudflare/workers-types": "^4.20250917.0",
+    "@cloudflare/workers-types": "^4.20250926.0",
     "@commitlint/cli": "^19.8.1",
     "@commitlint/config-conventional": "^19.8.1",
     "@commitlint/cz-commitlint": "^19.8.1",
     "@hono/zod-openapi": "1.1.1",
-    "@scalar/hono-api-reference": "^0.9.18",
+    "@scalar/hono-api-reference": "^0.9.19",
     "@types/bun": "^1.2.22",
     "@types/lodash": "^4.17.20",
-    "@types/node": "^24.5.1",
+    "@types/node": "^24.5.2",
     "commitizen": "^4.3.1",
     "husky": "^9.1.7",
-    "lint-staged": "^16.1.6",
+    "lint-staged": "^16.2.1",
     "prisma": "^6.16.2",
     "typescript": "^5.9.2",
     "wrangler": "4.37.1"
@@ -45,10 +45,10 @@
     "@zodios/plugins": "^10.6.0",
     "axios": "^1.12.2",
     "dayjs": "^1.11.18",
-    "hono": "^4.9.7",
+    "hono": "^4.9.8",
     "hono-rate-limiter": "^0.4.2",
     "tsshogi": "^2.1.0",
-    "zod": "^4.1.9"
+    "zod": "^4.1.11"
   },
   "private": true
 }
