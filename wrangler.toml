@@ -16,8 +16,7 @@ workers_dev = false
 preview_urls = false
 minify = true
 routes = [
-  # { pattern = "jsam.qleap.jp/api/games", custom_domain = false },
-  # { pattern = "jsam.qleap.jp/api/players", custom_domain = false },
+  { pattern = "jsam.qleap.jp/api/*", custom_domain = false },
   { pattern = "jsam.qleap.jp/openapi.json", custom_domain = false },
 ]
 
@@ -27,8 +26,6 @@ preview_urls = true
 minify = false
 routes = [
   { pattern = "jsam-dev.qleap.jp/api/*", custom_domain = false },
-  # { pattern = "jsam-dev.qleap.jp/api/games/*", custom_domain = false },
-  # { pattern = "jsam-dev.qleap.jp/api/-devdevplayers", custom_domain = false },
   { pattern = "jsam-dev.qleap.jp/openapi.json", custom_domain = false },
 ]
 
