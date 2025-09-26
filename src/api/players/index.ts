@@ -60,7 +60,7 @@ app.openapi(
           name: player.name,
           count: player._count.blackGames + player._count.whiteGames
         }))
-        .filter((player) => player.count >= 1)
+        .filter((player) => player.count >= 5)
         .sort((a, b) => b.count - a.count)
     )
     if (!result.success) {
