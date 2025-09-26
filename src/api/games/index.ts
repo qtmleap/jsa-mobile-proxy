@@ -158,7 +158,7 @@ app.openapi(
   }),
   async (c) => {
     const { game_id } = c.req.valid('param')
-    const game = await c.env.PRISMA.game.findUniqueOrThrow({
+    const game = await c.env.PRISMA.game.findUnique({
       where: { id: game_id },
       select: {
         id: true,
@@ -175,6 +175,10 @@ app.openapi(
         tags: true
       }
     })
+    // 見つからなかったときは404
+    if (game === null) {
+      throw new HTTPException(404, { message: 'Not Found' })
+    }
     // 終了していない対局は閲覧禁止
     if (game.endTime === null) {
       throw new HTTPException(403, { message: 'Forbidden' })
