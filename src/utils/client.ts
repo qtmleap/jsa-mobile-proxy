@@ -87,7 +87,7 @@ export const createClient: ClientFactory = (env: Env) => {
           'CF-Access-Client-Id': env.CF_ACCESS_CLIENT_ID,
           'CF-Access-Client-Secret': env.CF_ACCESS_CLIENT_SECRET
         },
-        baseURL: 'https://jsam-dev.qleap.jp',
+        baseURL: env.BASE_URL,
         responseType: 'json'
       }
     }
