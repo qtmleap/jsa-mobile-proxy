@@ -5,8 +5,8 @@ import { chunk } from "lodash"
 
 const fetch_game = async (game_id: number): Promise<void> => {
   const url: URL = new URL(`api/search/${game_id}`,'https://jsa-mobile-proxy-prod.lemonandchan.workers.dev/')
-  await fetch(url.href)
-  console.log(`Fetched game ${game_id}`)
+  const { status } = await fetch(url.href)
+  console.log(`Fetched game ${game_id} with status ${status}`)
 }
 
 export async function fetchAll() {
