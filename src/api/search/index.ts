@@ -92,7 +92,8 @@ app.openapi(
     if (record instanceof Error) {
       throw new HTTPException(400, { message: record.message })
     }
-    c.executionCtx.waitUntil(upsertGameInfo(c.env, decodeJSA(buffer), record))
+    // c.executionCtx.waitUntil(upsertGameInfo(c.env, decodeJSA(buffer), record))
+    await upsertGameInfo(c.env, decodeJSA(buffer), record)
     return c.json(exportJKF(record), 200)
   }
 )
