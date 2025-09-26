@@ -1,4 +1,5 @@
 import { createRoute, OpenAPIHono, z } from '@hono/zod-openapi'
+import dayjs from 'dayjs'
 import { cache } from 'hono/cache'
 import { HTTPException } from 'hono/http-exception'
 import { exportJKF, importJKFString, type Record } from 'tsshogi'
@@ -167,6 +168,12 @@ app.openapi(
     })
     // 終了していない対局は閲覧禁止
     if (game.endTime === null) {
+      throw new HTTPException(403, { message: 'Forbidden' })
+    }
+    if (dayjs(game.startTime).isBefore(dayjs().subtract(1, 'month')) && c.env.PLAN_ID <= 0) {
+      throw new HTTPException(403, { message: 'Forbidden' })
+    }
+    if (dayjs(game.startTime).isBefore(dayjs().subtract(1, 'year')) && c.env.PLAN_ID <= 1) {
       throw new HTTPException(403, { message: 'Forbidden' })
     }
     if (game.kif === null) {
