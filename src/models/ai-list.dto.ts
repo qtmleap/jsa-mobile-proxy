@@ -91,8 +91,8 @@ export const encodeJKF = (game: AIGame): any => {
   record.metadata.setStandardMetadata(RecordMetadataKey.STRATEGY, '')
   record.metadata.setStandardMetadata(RecordMetadataKey.END_DATETIME, dayjs(game.endtime).format('YYYY/MM/DD HH:mm:ss'))
   record.metadata.setStandardMetadata(RecordMetadataKey.PLACE, toNormalize(game.place))
-  record.metadata.setStandardMetadata(RecordMetadataKey.BLACK_NAME, game.player1)
-  record.metadata.setStandardMetadata(RecordMetadataKey.WHITE_NAME, game.player2)
+  record.metadata.setStandardMetadata(RecordMetadataKey.BLACK_NAME, game.player2)
+  record.metadata.setStandardMetadata(RecordMetadataKey.WHITE_NAME, game.player1)
   return JSON.parse(exportJKFString(record))
 }
 
@@ -145,7 +145,22 @@ export const AIGameSchema = z.object({
 
 export type AIGame = z.infer<typeof AIGameSchema>
 
-export const GameJSONSchema = z
+export const AIListSchema = z
+  .string()
+  .nonempty()
+  .transform((v) => ({
+    games: v
+      .split('\n')
+      .map((line) => line.trim())
+      .filter((line) => line.length > 0)
+      .filter((line) => !line.startsWith('#'))
+      .filter((line) => !Number.isNaN(parseInt(line, 10)))
+      .map((line) => ({
+        game_id: parseInt(line, 10)
+      }))
+  }))
+
+export const AIGameJSONSchema = z
   .array(AIGameSchema.transform(encodeJKF))
   .transform((arr) => arr[0])
   .pipe(JKFSchema)

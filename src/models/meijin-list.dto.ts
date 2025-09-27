@@ -6,7 +6,7 @@ import { toNormalize } from '@/utils/normalize'
 dayjs.extend(customParseFormat)
 
 // biome-ignore lint/suspicious/noExplicitAny: reason
-const decodeMeijinList = (input: string): any => {
+export const decodeMeijinList = (input: string): any => {
   // 余計なデータを正規化する
   const blocks: string[] = toNormalize(input)
     .split('/-----')

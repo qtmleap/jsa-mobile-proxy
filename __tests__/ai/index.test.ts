@@ -1,14 +1,65 @@
-import { describe } from 'bun:test'
-import { doesNotThrow } from 'node:assert'
+import { beforeEach, describe, expect } from 'bun:test'
 import { it } from 'node:test'
-import { GameJSONSchema } from '@/models/ai.dto'
-import { readJSONSync } from '../client'
+import { importJKF, type Record, RecordMetadataKey } from 'tsshogi'
+import { AIGameJSONSchema, AIListSchema } from '@/models/ai-list.dto'
+import { readJSONSync, readTextSync } from '../client'
 
 describe('Equality', () => {
-  const _expected = readJSONSync('ai/ip.jsamobile.jp/18440.json')
+  const expected: Record | Error = importJKF(readJSONSync('ai/ip.jsamobile.jp/18440.json'))
   const received = readJSONSync('ai/d2pngvm764jm.cloudfront.net/18440.json')
 
-  it('Decode To Record', () => {
-    doesNotThrow(() => GameJSONSchema.parse(received))
+  beforeEach(() => {})
+
+  // AI自動記録とモバイル観戦の棋譜が一致するかどうか
+  it('Record Equality', () => {
+    if (expected instanceof Error) {
+      throw expected
+    }
+    const result = AIGameJSONSchema.safeParse(received)
+    expect(result.success).toBe(true)
+    if (!result.success) {
+      throw new Error('Failed to parse received data')
+    }
+    // biome-ignore lint/suspicious/noExplicitAny: reason
+    const record: Record | Error = importJKF(result.data as any)
+    if (record instanceof Error) {
+      throw record
+    }
+    expect(record.metadata.getStandardMetadata(RecordMetadataKey.TITLE)).toEqual(expected.metadata.getStandardMetadata(RecordMetadataKey.TITLE))
+    expect(record.metadata.getStandardMetadata(RecordMetadataKey.LENGTH)).toEqual(expected.metadata.getStandardMetadata(RecordMetadataKey.LENGTH))
+    expect(record.metadata.getStandardMetadata(RecordMetadataKey.CATEGORY)).toEqual(expected.metadata.getStandardMetadata(RecordMetadataKey.CATEGORY))
+    expect(record.metadata.getStandardMetadata(RecordMetadataKey.DATE)).toEqual(expected.metadata.getStandardMetadata(RecordMetadataKey.DATE))
+    expect(record.metadata.getStandardMetadata(RecordMetadataKey.START_DATETIME)).toEqual(
+      expected.metadata.getStandardMetadata(RecordMetadataKey.START_DATETIME)
+    )
+    expect(record.metadata.getStandardMetadata(RecordMetadataKey.END_DATETIME)).toEqual(expected.metadata.getStandardMetadata(RecordMetadataKey.END_DATETIME))
+  })
+
+  // AI自動記録のテキストがパースできるかどうか
+  it('Parse AI Game List', async () => {
+    const text: string = readTextSync('ai/ai_game_list.txt')
+    const result = AIListSchema.safeParse(text)
+    expect(result.success).toBe(true)
+    if (!result.success) {
+      throw new Error('Failed to parse AI game list')
+    }
+    expect(result.data.games.length).toBe(7810)
+  })
+
+  // AI自動記録のJSONが正しくJKFにパースできるかどうか
+  it('Decode To JKF', () => {
+    const result = AIGameJSONSchema.safeParse(received)
+    expect(result.success).toBe(true)
+    if (!result.success) {
+      throw new Error('Failed to parse received data')
+    }
+    // biome-ignore lint/suspicious/noExplicitAny: reason
+    const record: Record | Error = importJKF(result.data as any)
+    if (record instanceof Error) {
+      throw record
+    }
+    expect(record.metadata.getStandardMetadata(RecordMetadataKey.LENGTH)).toBe('134')
+    expect(record.metadata.getStandardMetadata(RecordMetadataKey.TITLE)).toBe('第83期名人戦七番勝負第1局')
+    expect(record.metadata.getStandardMetadata(RecordMetadataKey.TOURNAMENT)).toBe('名人戦')
   })
 })

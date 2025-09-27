@@ -2,9 +2,9 @@ import { makeApi, Zodios, type ZodiosInstance } from '@zodios/core'
 import * as iconv from 'iconv-lite'
 import { exportJKFString, importKIF, type Record } from 'tsshogi'
 import z from 'zod'
-import { AIGameSchema, encodeJKF, GameJSONSchema } from '@/models/ai.dto'
+import { AIGameSchema, AIListSchema, encodeJKF } from '@/models/ai-list.dto'
 import { JKFSchema } from '@/models/jkf.dto'
-import { MeijinListStringSchema } from '@/models/meijin-list.dto'
+import { decodeMeijinList, MeijinListSchema } from '@/models/meijin-list.dto'
 import { SearchRequestSchema } from '@/models/search.dto'
 import { GameResultWebhookRequestSchema } from '@/models/webhook.dto'
 import type { Env } from './bindings'
@@ -33,7 +33,7 @@ export const endpoints = makeApi([
     method: 'get',
     path: '/ai/ai_game_list.txt',
     parameters: [],
-    response: GameJSONSchema
+    response: AIListSchema
   },
   {
     method: 'get',
@@ -59,7 +59,7 @@ export const endpoints = makeApi([
     method: 'get',
     path: '/list/meijin_all_game_list.txt',
     parameters: [],
-    response: MeijinListStringSchema
+    response: z.string().transform(decodeMeijinList).pipe(z.array(MeijinListSchema))
   },
   {
     method: 'get',
