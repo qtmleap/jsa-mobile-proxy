@@ -17,6 +17,7 @@ import { secureHeaders } from 'hono/secure-headers'
 import { timeout } from 'hono/timeout'
 import { trimTrailingSlash } from 'hono/trailing-slash'
 import { ZodError } from 'zod'
+import ai from './api/ai/games'
 import games from './api/games'
 import players from './api/players'
 import search from './api/search'
@@ -74,6 +75,7 @@ app.route('/api/search', search)
 app.route('/api/games', games)
 app.route('/api/players', players)
 app.route('/api/tags', tags)
+app.route('/api/ai/games', ai)
 app.doc31('/openapi.json', specification)
 app.get('/docs', Scalar(reference))
 app.notFound((c) => c.redirect('/docs'))
