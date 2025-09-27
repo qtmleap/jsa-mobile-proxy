@@ -1,6 +1,8 @@
 [
   {
-    "header": {},
+    "header": {
+      "表題": "第83期名人戦七番勝負第１局"
+    },
     "initial": {
       "preset": "HIRATE"
     },
