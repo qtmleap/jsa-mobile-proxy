@@ -1,181 +1,36 @@
 import { describe, expect } from 'bun:test'
-import { readFileSync } from 'node:fs'
-import { dirname } from 'node:path'
-import { join } from 'node:path/posix'
 import { it } from 'node:test'
-import { decodeJSA } from '@mito-shogi/tsshogi-jsa'
-import { Zodios } from '@zodios/core'
-import { AxiosError } from 'axios'
-import { fileURLToPath } from 'bun'
-import * as iconv from 'iconv-lite'
-import { ZodError } from 'zod'
-import { GameJSONSchema } from '@/models/ai.dto'
-import { KIFSchema } from '@/models/kif.dto'
-import { endpoints } from '@/utils/client'
-
-const client = new Zodios('https://ip.jsamobile.jp', endpoints)
-
-client.use('get', '/api/index.php', {
-  name: 'ResponseType',
-  async request(_, config) {
-    return {
-      ...config,
-      auth: {
-        // biome-ignore lint/style/noNonNullAssertion: reason
-        username: process.env.JSA_MOBILE_USERNAME!,
-        // biome-ignore lint/style/noNonNullAssertion: reason
-        password: process.env.JSA_MOBILE_PASSWORD!
-      },
-      headers: {
-        'User-Agent': 'JsaLive/2 CFNetwork/3826.600.41 Darwin/24.6.0',
-        'Accept-Language': 'ja',
-        'Accept-Encoding': 'gzip, deflate, br',
-        Accept: '*/*'
-      },
-      withCredentials: true,
-      responseType: 'arraybuffer',
-      transformResponse: [
-        (data) => {
-          if (data instanceof ArrayBuffer) {
-            return Buffer.from(data)
-          }
-          return data
-        }
-      ]
-    }
-  }
-})
-
-client.use('get', '/ai/:game_id:format', {
-  name: 'BaseURL',
-  async request(_, config) {
-    return {
-      ...config,
-      auth: {
-        // biome-ignore lint/style/noNonNullAssertion: reason
-        username: process.env.JSA_AI_USERNAME!,
-        // biome-ignore lint/style/noNonNullAssertion: reason
-        password: process.env.JSA_AI_PASSWORD!
-      },
-      // responseType: 'json',
-      baseURL: 'https://d2pngvm764jm.cloudfront.net'
-    }
-  }
-})
-
-client.use('get', '/pay/kif/meijinsen/:year/:month/:day/:rank/:game_id:format', {
-  name: 'BaseURL',
-  async request(_, config) {
-    return {
-      ...config,
-      headers: {
-        // biome-ignore lint/style/noNonNullAssertion: reason
-        Cookie: `kisen_session=${process.env.MEIJIN_SESSION!}`
-      },
-      responseType: 'arraybuffer',
-      baseURL: 'https://member.meijinsen.jp',
-      transformResponse: [
-        (data) => {
-          return iconv.decode(Buffer.from(data), 'shift_jis')
-        }
-      ]
-    }
-  }
-})
-
-// biome-ignore lint/suspicious/noExplicitAny: reason
-const readJSONSync = (filePath: string): any => {
-  const __filename = fileURLToPath(import.meta.url)
-  const __dirname = dirname(__filename)
-  return JSON.parse(readFileSync(join(__dirname, filePath), 'utf8'))
-}
-
-const fetch_jsam = async (gameId: number): Promise<void> => {
-  try {
-    const result = await client.get('/api/index.php', {
-      queries: {
-        // @ts-ignore
-        action: 'shogi',
-        p1: gameId
-      }
-    })
-    console.log(gameId, decodeJSA(result).metadata)
-  } catch (error) {
-    if (error instanceof AxiosError) {
-      console.error(gameId, error.status, error.message)
-    }
-  }
-}
-
-const fetch_ai = async (gameId: number): Promise<void> => {
-  try {
-    const result = GameJSONSchema.safeParse(
-      await client.get('/ai/:game_id:format', {
-        params: {
-          game_id: gameId,
-          format: '.json'
-        }
-      })
-    )
-    if (!result.success) {
-      throw new ZodError(result.error.issues)
-    }
-    console.log(gameId, result.data[0].header)
-  } catch (error) {
-    if (error instanceof AxiosError) {
-      console.error(gameId, error.status, error.message)
-    }
-  }
-}
-
-const fetch_meijin = async (
-  gameId: number,
-  option: {
-    year: number
-    month: number
-    day: number
-    rank: 'M7' | 'A' | 'B1' | 'B2' | 'C1' | 'C2'
-  }
-): Promise<void> => {
-  try {
-    const result = KIFSchema.safeParse(
-      await client.get('/pay/kif/meijinsen/:year/:month/:day/:rank/:game_id:format', {
-        params: {
-          year: option.year,
-          month: option.month,
-          day: option.day,
-          rank: option.rank,
-          game_id: gameId,
-          format: '.txt'
-        }
-      })
-    )
-    if (!result.success) {
-      throw new ZodError(result.error.issues)
-    }
-    console.log(gameId, result.data.header)
-  } catch (error) {
-    if (error instanceof AxiosError) {
-      console.error(gameId, error.status, error.message)
-    }
-  }
-}
+import { fetch_ai, fetch_jsam, fetch_meijin, readJSONSync } from '../client'
 
 describe('Equality', () => {
-  const games = readJSONSync('meijin_all_game_list.json')
+  const games = readJSONSync('meijin/meijin_all_game_list.json')
   it('Record Count', async () => {
     expect(games.length).toBe(13461)
   })
 })
 
 describe('Fetch', () => {
-  it('第72期王座戦五番勝負第1局', async () => {
-    await fetch_jsam(17361)
-    await fetch_ai(17361)
-  })
+  // 全てのidが存在する
   it('第83期名人戦七番勝負第1局', async () => {
     await fetch_jsam(18440)
     await fetch_ai(18440)
     await fetch_meijin(15028, { year: 2025, month: 4, day: 9, rank: 'M7' }) // game_id 18440 => meijin_id 15028
+  })
+  // meijin_idが存在しない
+  it('第72期王座戦五番勝負第1局', async () => {
+    await fetch_jsam(17361)
+    await fetch_ai(17361)
+  })
+  // jsam_idが存在しない
+  it('第82期順位戦B級1組2回戦', async () => {
+    // await fetch_jsam(113657)
+    await fetch_ai(113657)
+    await fetch_meijin(13657, { year: 2023, month: 7, day: 6, rank: 'B1' }) // game_id 113657 => meijin_id 13657
+  })
+  // jsam_id, ai_idが存在しない
+  it('第83期順位戦C級2組1回戦', async () => {
+    // await fetch_jsam(113657)
+    await fetch_ai(114584)
+    await fetch_meijin(14584, { year: 2024, month: 6, day: 13, rank: 'C2' }) // game_id 114584 => meijin_id 14584
   })
 })
