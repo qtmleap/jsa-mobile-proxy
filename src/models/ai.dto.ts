@@ -12,6 +12,19 @@ import {
 } from 'tsshogi'
 import { JKFSchema } from './jkf.dto'
 
+const _toNormalize = (str: string): string => {
+  return (
+    str
+      .replace(/[\uFF10-\uFF19]/g, (match) => String.fromCharCode(match.charCodeAt(0) - 0xfee0))
+      .replace(/[\uFF21-\uFF3A\uFF41-\uFF5A]/g, (match) => String.fromCharCode(match.charCodeAt(0) - 0xfee0))
+      // 全角スペース(U+3000)→半角スペース(U+0020)
+      .replace(/\u3000/g, '\u0020')
+      // △(U+25B3)→☖(U+2616)、▲(U+25B2)→☗(U+2617)
+      .replace(/\u25B3/g, '\u2616')
+      .replace(/\u25B2/g, '\u2617')
+  )
+}
+
 export const KifSchema = z.object({
   num: z.number(),
   time: z.number(),
@@ -83,12 +96,15 @@ const encodeJKF = (game: Game): any => {
     // 消費時間を追加
     record.current.setElapsedMs(kif.spend * 1000)
   }
-  record.metadata.setStandardMetadata(RecordMetadataKey.TITLE, '')
+  record.metadata.setStandardMetadata(RecordMetadataKey.TITLE, game.event)
   record.metadata.setStandardMetadata(RecordMetadataKey.TIME_LIMIT, '')
   record.metadata.setStandardMetadata(RecordMetadataKey.BLACK_TIME_LIMIT, '')
   record.metadata.setStandardMetadata(RecordMetadataKey.WHITE_TIME_LIMIT, '')
   record.metadata.setStandardMetadata(RecordMetadataKey.LENGTH, '')
   record.metadata.setStandardMetadata(RecordMetadataKey.STRATEGY, '')
+  record.metadata.setStandardMetadata(RecordMetadataKey.BLACK_NAME, '')
+  record.metadata.setStandardMetadata(RecordMetadataKey.WHITE_NAME, '')
+
   return JSON.parse(exportJKFString(record))
 }
 
