@@ -97,13 +97,17 @@ const encodeJKF = (game: Game): any => {
     // 消費時間を追加
     record.current.setElapsedMs(kif.spend * 1000)
   }
-  const _tournament = TournamentList
+  const tournament = TournamentList.find((t) => t.keys.some((key) => game.event.includes(key)))?.value
+  // const tournament = TournamentList.find((t) => t.keys.some(key) => game.title.includes(key))?.value)
   record.metadata.setStandardMetadata(RecordMetadataKey.TITLE, toNormalize(game.event))
   record.metadata.setStandardMetadata(RecordMetadataKey.DATE, game.starttime)
   record.metadata.setStandardMetadata(RecordMetadataKey.TIME_LIMIT, game.timelimit)
   record.metadata.setStandardMetadata(RecordMetadataKey.BLACK_TIME_LIMIT, game.timelimit)
   record.metadata.setStandardMetadata(RecordMetadataKey.WHITE_TIME_LIMIT, game.timelimit)
   record.metadata.setStandardMetadata(RecordMetadataKey.LENGTH, (game.end_tesu - 1).toString())
+  if (tournament !== undefined) {
+    record.metadata.setStandardMetadata(RecordMetadataKey.TOURNAMENT, tournament)
+  }
   record.metadata.setStandardMetadata(RecordMetadataKey.STRATEGY, '')
   record.metadata.setStandardMetadata(RecordMetadataKey.START_DATETIME, game.starttime)
   record.metadata.setStandardMetadata(RecordMetadataKey.END_DATETIME, game.enddate)
