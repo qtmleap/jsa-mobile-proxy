@@ -1,16 +1,7 @@
 import { z } from '@hono/zod-openapi'
 import { TournamentList } from '@mito-shogi/tsshogi-jsa'
-import {
-  exportJKFString,
-  InitialPositionType,
-  type Move,
-  PieceType,
-  Position,
-  Record,
-  RecordMetadataKey,
-  SpecialMoveType,
-  Square
-} from 'tsshogi'
+import dayjs from 'dayjs'
+import { exportJKFString, InitialPositionType, type Move, PieceType, Position, Record, RecordMetadataKey, SpecialMoveType, Square } from 'tsshogi'
 import { JKFSchema } from './jkf.dto'
 
 const toNormalize = (str: string): string => {
@@ -100,7 +91,8 @@ const encodeJKF = (game: Game): any => {
   const tournament = TournamentList.find((t) => t.keys.some((key) => game.event.includes(key)))?.value
   // const tournament = TournamentList.find((t) => t.keys.some(key) => game.title.includes(key))?.value)
   record.metadata.setStandardMetadata(RecordMetadataKey.TITLE, toNormalize(game.event))
-  record.metadata.setStandardMetadata(RecordMetadataKey.DATE, game.starttime)
+  record.metadata.setStandardMetadata(RecordMetadataKey.DATE, dayjs(game.starttime).format('YYYY/MM/DD'))
+  record.metadata.setStandardMetadata(RecordMetadataKey.START_DATETIME, dayjs(game.starttime).format('YYYY/MM/DD HH:mm:ss'))
   record.metadata.setStandardMetadata(RecordMetadataKey.TIME_LIMIT, game.timelimit)
   record.metadata.setStandardMetadata(RecordMetadataKey.BLACK_TIME_LIMIT, game.timelimit)
   record.metadata.setStandardMetadata(RecordMetadataKey.WHITE_TIME_LIMIT, game.timelimit)
@@ -109,8 +101,7 @@ const encodeJKF = (game: Game): any => {
     record.metadata.setStandardMetadata(RecordMetadataKey.TOURNAMENT, tournament)
   }
   record.metadata.setStandardMetadata(RecordMetadataKey.STRATEGY, '')
-  record.metadata.setStandardMetadata(RecordMetadataKey.START_DATETIME, game.starttime)
-  record.metadata.setStandardMetadata(RecordMetadataKey.END_DATETIME, game.enddate)
+  record.metadata.setStandardMetadata(RecordMetadataKey.END_DATETIME, dayjs(game.endtime).format('YYYY/MM/DD HH:mm:ss'))
   record.metadata.setStandardMetadata(RecordMetadataKey.PLACE, toNormalize(game.place))
   record.metadata.setStandardMetadata(RecordMetadataKey.BLACK_NAME, game.player1)
   record.metadata.setStandardMetadata(RecordMetadataKey.WHITE_NAME, game.player2)
