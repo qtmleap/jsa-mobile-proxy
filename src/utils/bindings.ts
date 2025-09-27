@@ -5,6 +5,8 @@ import type { JSAMobileEndpoint } from './client'
 export interface Env {
   JSA_MOBILE_USERNAME: string
   JSA_MOBILE_PASSWORD: string
+  JSA_AI_USERNAME: string
+  JSA_AI_PASSWORD: string
   JWT_SECRET_KEY: string
   BUCKET: R2Bucket
   KV: KVNamespace
