@@ -4,7 +4,7 @@ import { fileURLToPath } from 'node:url'
 import { decodeJSA } from '@mito-shogi/tsshogi-jsa'
 import { AxiosError } from 'axios'
 import { ZodError } from 'zod'
-import { GameJSONSchema } from '@/models/ai.dto'
+import { AIGameJSONSchema } from '@/models/ai-list.dto'
 import { KIFSchema } from '@/models/kif.dto'
 import type { Env } from '@/utils/bindings'
 import { createClient } from '@/utils/client'
@@ -63,7 +63,7 @@ export const fetch_jsam = async (gameId: number): Promise<void> => {
 
 export const fetch_ai = async (gameId: number): Promise<void> => {
   try {
-    const result = GameJSONSchema.safeParse(
+    const result = AIGameJSONSchema.safeParse(
       await client.get('/ai/:game_id:format', {
         params: {
           game_id: gameId,
@@ -74,7 +74,7 @@ export const fetch_ai = async (gameId: number): Promise<void> => {
     if (!result.success) {
       throw new ZodError(result.error.issues)
     }
-    console.log(gameId, result.data[0].header)
+    console.log(gameId, result.data.header)
   } catch (error) {
     if (error instanceof AxiosError) {
       console.error(gameId, error.status, error.message)
