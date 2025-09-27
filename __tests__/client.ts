@@ -2,104 +2,31 @@ import { readFileSync } from 'node:fs'
 import { dirname, join } from 'node:path'
 import { fileURLToPath } from 'node:url'
 import { decodeJSA } from '@mito-shogi/tsshogi-jsa'
-import { Zodios } from '@zodios/core'
 import { AxiosError } from 'axios'
-import * as iconv from 'iconv-lite'
 import { ZodError } from 'zod'
 import { GameJSONSchema } from '@/models/ai.dto'
 import { KIFSchema } from '@/models/kif.dto'
-import { endpoints } from '@/utils/client'
+import type { Env } from '@/utils/bindings'
+import { createClient } from '@/utils/client'
 
-export const client = new Zodios('https://ip.jsamobile.jp', endpoints)
+const env: Env = {
+  // biome-ignore lint/style/noNonNullAssertion: reason
+  JSA_MOBILE_USERNAME: process.env.JSA_MOBILE_USERNAME!,
+  // biome-ignore lint/style/noNonNullAssertion: reason
+  JSA_MOBILE_PASSWORD: process.env.JSA_MOBILE_PASSWORD!,
+  // biome-ignore lint/style/noNonNullAssertion: reason
+  JSA_AI_USERNAME: process.env.JSA_AI_USERNAME!,
+  // biome-ignore lint/style/noNonNullAssertion: reason
+  JSA_AI_PASSWORD: process.env.JSA_AI_PASSWORD!,
+  // biome-ignore lint/style/noNonNullAssertion: reason
+  JSA_MEIJIN_USERNAME: process.env.JSA_MEIJIN_USERNAME!,
+  // biome-ignore lint/style/noNonNullAssertion: reason
+  JSA_MEIJIN_PASSWORD: process.env.JSA_MEIJIN_PASSWORD!,
+  // biome-ignore lint/style/noNonNullAssertion: reason
+  MEIJIN_SESSION: process.env.MEIJIN_SESSION!
+} as Env
 
-client.use('get', '/api/index.php', {
-  name: 'ResponseType',
-  async request(_, config) {
-    return {
-      ...config,
-      auth: {
-        // biome-ignore lint/style/noNonNullAssertion: reason
-        username: process.env.JSA_MOBILE_USERNAME!,
-        // biome-ignore lint/style/noNonNullAssertion: reason
-        password: process.env.JSA_MOBILE_PASSWORD!
-      },
-      headers: {
-        'User-Agent': 'JsaLive/2 CFNetwork/3826.600.41 Darwin/24.6.0',
-        'Accept-Language': 'ja',
-        'Accept-Encoding': 'gzip, deflate, br',
-        Accept: '*/*'
-      },
-      withCredentials: true,
-      responseType: 'arraybuffer',
-      transformResponse: [
-        (data) => {
-          if (data instanceof ArrayBuffer) {
-            return Buffer.from(data)
-          }
-          return data
-        }
-      ]
-    }
-  }
-})
-client.use('get', '/ai/:game_id:format', {
-  name: 'BaseURL',
-  async request(_, config) {
-    return {
-      ...config,
-      auth: {
-        // biome-ignore lint/style/noNonNullAssertion: reason
-        username: process.env.JSA_AI_USERNAME!,
-        // biome-ignore lint/style/noNonNullAssertion: reason
-        password: process.env.JSA_AI_PASSWORD!
-      },
-      // responseType: 'json',
-      baseURL: 'https://d2pngvm764jm.cloudfront.net'
-    }
-  }
-})
-client.use('get', '/list/meijin_all_game_list.txt', {
-  name: 'Meijin Auth',
-  async request(_, config) {
-    return {
-      ...config,
-      auth: {
-        // biome-ignore lint/style/noNonNullAssertion: reason
-        username: process.env.JSA_MEIJIN_USERNAME!,
-        // biome-ignore lint/style/noNonNullAssertion: reason
-        password: process.env.JSA_MEIJIN_PASSWORD!
-      },
-      headers: {
-        'User-Agent': 'JsaLive/2 CFNetwork/3826.600.41 Darwin/24.6.0',
-        'Accept-Language': 'ja',
-        'Accept-Encoding': 'gzip, deflate, br',
-        Accept: '*/*'
-      },
-      withCredentials: true,
-      responseType: 'json',
-      baseURL: 'https://d31j6ipzjd5eeo.cloudfront.net'
-    }
-  }
-})
-client.use('get', '/pay/kif/meijinsen/:year/:month/:day/:rank/:game_id:format', {
-  name: 'BaseURL',
-  async request(_, config) {
-    return {
-      ...config,
-      headers: {
-        // biome-ignore lint/style/noNonNullAssertion: reason
-        Cookie: `kisen_session=${process.env.MEIJIN_SESSION!}`
-      },
-      responseType: 'arraybuffer',
-      baseURL: 'https://member.meijinsen.jp',
-      transformResponse: [
-        (data) => {
-          return iconv.decode(Buffer.from(data), 'shift_jis')
-        }
-      ]
-    }
-  }
-})
+export const client = createClient(env)
 
 // biome-ignore lint/suspicious/noExplicitAny: reason
 export const readJSONSync = (filePath: string): any => {
