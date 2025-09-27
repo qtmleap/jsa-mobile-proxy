@@ -41,7 +41,10 @@ export const MeijinListSchema = z.object({
   // biome-ignore lint/suspicious/noExplicitAny: reason
   tablet_id: z.preprocess((input: any) => (input === undefined ? undefined : input.length === 0 ? undefined : input), z.string().nonempty().optional()),
   kif_key: z.string().nonempty(),
-  modified: z.coerce.number().int(),
+  modified: z.coerce
+    .number()
+    .int()
+    .transform((v) => dayjs(v * 1000).format('YYYY-MM-DD HH:mm')),
   start_date: z.preprocess(
     // biome-ignore lint/suspicious/noExplicitAny: reason
     (input: any) => (input === undefined ? undefined : input.length === 0 ? undefined : toNormalizeDate(input)),
@@ -74,27 +77,3 @@ export const MeijinListSchema = z.object({
 })
 
 export const MeijinListStringSchema = z.string().transform(decodeMeijinList).pipe(z.array(MeijinListSchema))
-
-// game_id=19308
-// meijin_id=15048
-// tablet_id=68c02d79f5bdd69b5c5bb29f
-// kif_key=/pay/kif/meijinsen/2025/09/24/A1/15048.txt
-// modified=1758883571  // 2025/09/26 19:46:11
-// start_date=2025/09/24 10:00
-// end_date=2025/09/24 21:42
-// kisen=第84期順位戦Ａ級３回戦
-// side=1
-// sente=豊島 将之九段
-// gote=増田 康宏八段
-// family1=豊島
-// name1=将之
-// title1=九段
-// family2=増田
-// name2=康宏
-// title2=八段
-// senkei=角換わりその他
-// result=1
-// winner=1
-// tesuu=79
-// sente_score=１勝１敗
-// gote_score=１勝１敗
