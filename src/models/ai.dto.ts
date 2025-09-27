@@ -87,6 +87,8 @@ const encodeJKF = (game: Game): any => {
   record.metadata.setStandardMetadata(RecordMetadataKey.TIME_LIMIT, '')
   record.metadata.setStandardMetadata(RecordMetadataKey.BLACK_TIME_LIMIT, '')
   record.metadata.setStandardMetadata(RecordMetadataKey.WHITE_TIME_LIMIT, '')
+  record.metadata.setStandardMetadata(RecordMetadataKey.LENGTH, '')
+  record.metadata.setStandardMetadata(RecordMetadataKey.STRATEGY, '')
   return JSON.parse(exportJKFString(record))
 }
 
