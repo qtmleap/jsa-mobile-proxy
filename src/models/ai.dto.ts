@@ -1,4 +1,15 @@
-import z from 'zod'
+import { z } from '@hono/zod-openapi'
+import {
+  exportJKFString,
+  InitialPositionType,
+  type Move,
+  PieceType,
+  Position,
+  Record,
+  SpecialMoveType,
+  Square
+} from 'tsshogi'
+import { JKFSchema } from './jkf.dto'
 
 export const KifSchema = z.object({
   num: z.number(),
@@ -13,6 +24,65 @@ export const KifSchema = z.object({
   move: z.string(),
   _id: z.string()
 })
+
+const encodeJKF = (game: Game): any => {
+  const position: Position = (() => {
+    if (game.handicap === '平手') {
+      // biome-ignore lint/style/noNonNullAssertion: ignore
+      return Position.newBySFEN(InitialPositionType.STANDARD)!
+    }
+    throw new Error('Not implemented')
+  })()
+  const record: Record = new Record(position)
+  for (const kif of game.kif) {
+    // 多分これになるのは投了のときだけ
+    if (kif.toX === null || kif.toY === null) {
+      if (kif.move === '投了') {
+        record.append(SpecialMoveType.RESIGN)
+        continue
+      }
+      throw new Error(`Invalid SpecialMoveType ${kif.move}`)
+    }
+    if (kif.frX === null || kif.frY === null) {
+      continue
+    }
+    const to: Square = new Square(kif.toX, kif.toY)
+    const from: Square | PieceType = (() => {
+      if (kif.frY === 0 || kif.frY >= 10) {
+        switch (kif.type) {
+          case 'KYO':
+            return PieceType.LANCE
+          case 'KEI':
+            return PieceType.KNIGHT
+          case 'GIN':
+            return PieceType.SILVER
+          case 'KIN':
+            return PieceType.GOLD
+          case 'KAKU':
+            return PieceType.BISHOP
+          case 'HI':
+            return PieceType.ROOK
+          case 'FU':
+            return PieceType.PAWN
+          default:
+            throw new Error(`Unknown piece type: ${kif.type}`)
+        }
+      }
+      return new Square(kif.frX, kif.frY)
+    })()
+    const move: Move | null = record.position.createMove(from, to)
+    if (move === null) {
+      console.error(kif)
+      throw new Error(`Invalid move: from ${from} to ${to}`)
+    }
+    // 成り判定
+    move.promote = kif.prmt === 1
+    record.append(move, { ignoreValidation: false })
+    // 消費時間を追加
+    record.current.setElapsedMs(kif.spend * 1000)
+  }
+  return JSON.parse(exportJKFString(record))
+}
 
 export const GameSchema = z.object({
   _id: z.string(),
@@ -60,3 +130,7 @@ export const GameSchema = z.object({
   kif: z.array(KifSchema),
   breaktime: z.array(z.any())
 })
+
+export const GameJSONSchema = z.array(GameSchema.transform(encodeJKF).pipe(JKFSchema))
+
+export type Game = z.infer<typeof GameSchema>
