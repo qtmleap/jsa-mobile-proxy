@@ -7,7 +7,7 @@ import { dirname, join } from "node:path"
 import { fileURLToPath } from "node:url"
 
 const fetch_game = async (game_id: number): Promise<void> => {
-  const url: URL = new URL(`api/search/${game_id}`,'https://jsa-mobile-proxy-prod.lemonandchan.workers.dev/')
+  const url: URL = new URL(`ai/${game_id}.json`,'https://d2pngvm764jm.cloudfront.net')
   const { status } = await fetch(url.href)
   console.log(`Fetched game ${game_id} with status ${status}`)
 }
