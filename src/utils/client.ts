@@ -225,7 +225,12 @@ export const createClient: ClientFactory = (env: Env) => {
         },
         withCredentials: true,
         baseURL: 'https://d31j6ipzjd5eeo.cloudfront.net',
-        responseType: 'json'
+        responseType: 'arraybuffer',
+        transformResponse: [
+          (data) => {
+            return iconv.decode(Buffer.from(data), 'shift_jis')
+          }
+        ]
       }
     }
   })

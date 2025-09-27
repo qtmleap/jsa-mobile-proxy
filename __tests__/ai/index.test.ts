@@ -2,7 +2,7 @@ import { beforeEach, describe, expect } from 'bun:test'
 import { it } from 'node:test'
 import { importJKF, type Record, RecordMetadataKey } from 'tsshogi'
 import { AIGameJSONSchema, AIListSchema } from '@/models/ai-list.dto'
-import { readJSONSync, readTextSync } from '../client'
+import { client, readJSONSync, readTextSync } from '../client'
 
 describe('Equality', () => {
   const expected: Record | Error = importJKF(readJSONSync('ai/ip.jsamobile.jp/18440.json'))
@@ -63,5 +63,14 @@ describe('Equality', () => {
     expect(record.metadata.getStandardMetadata(RecordMetadataKey.TOURNAMENT)).toBe('名人戦')
     expect(record.metadata.getStandardMetadata(RecordMetadataKey.BLACK_NAME)).toBe('永瀬拓矢九段')
     expect(record.metadata.getStandardMetadata(RecordMetadataKey.WHITE_NAME)).toBe('藤井聡太名人')
+  })
+
+  it('Fetch AI Game List', async () => {
+    const result = AIListSchema.safeParse(await client.get('/ai/ai_game_list.txt'))
+    expect(result.success).toBe(true)
+    if (!result.success) {
+      throw new Error('Failed to fetch AI game list')
+    }
+    expect(result.data.games.length).toBeGreaterThan(7810)
   })
 })
