@@ -87,6 +87,12 @@ export const readJSONSync = (filePath: string): any => {
   return JSON.parse(readFileSync(join(__dirname, filePath), 'utf8'))
 }
 
+export const readTextSync = (filePath: string): string => {
+  const __filename = fileURLToPath(import.meta.url)
+  const __dirname = dirname(__filename)
+  return readFileSync(join(__dirname, filePath), 'utf8')
+}
+
 export const fetch_jsam = async (gameId: number): Promise<void> => {
   try {
     const result = await client.get('/api/index.php', {
