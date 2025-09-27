@@ -25,6 +25,7 @@ export const KifSchema = z.object({
   _id: z.string()
 })
 
+// biome-ignore lint/suspicious/noExplicitAny: reason
 const encodeJKF = (game: Game): any => {
   const position: Position = (() => {
     if (game.handicap === '平手') {
