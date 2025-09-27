@@ -61,5 +61,7 @@ describe('Equality', () => {
     expect(record.metadata.getStandardMetadata(RecordMetadataKey.LENGTH)).toBe('134')
     expect(record.metadata.getStandardMetadata(RecordMetadataKey.TITLE)).toBe('第83期名人戦七番勝負第1局')
     expect(record.metadata.getStandardMetadata(RecordMetadataKey.TOURNAMENT)).toBe('名人戦')
+    expect(record.metadata.getStandardMetadata(RecordMetadataKey.BLACK_NAME)).toBe('永瀬拓矢九段')
+    expect(record.metadata.getStandardMetadata(RecordMetadataKey.WHITE_NAME)).toBe('藤井聡太名人')
   })
 })
