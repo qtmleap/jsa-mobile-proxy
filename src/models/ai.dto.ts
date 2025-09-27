@@ -6,6 +6,7 @@ import {
   PieceType,
   Position,
   Record,
+  RecordMetadataKey,
   SpecialMoveType,
   Square
 } from 'tsshogi'
@@ -82,6 +83,10 @@ const encodeJKF = (game: Game): any => {
     // 消費時間を追加
     record.current.setElapsedMs(kif.spend * 1000)
   }
+  record.metadata.setStandardMetadata(RecordMetadataKey.TITLE, '')
+  record.metadata.setStandardMetadata(RecordMetadataKey.TIME_LIMIT, '')
+  record.metadata.setStandardMetadata(RecordMetadataKey.BLACK_TIME_LIMIT, '')
+  record.metadata.setStandardMetadata(RecordMetadataKey.WHITE_TIME_LIMIT, '')
   return JSON.parse(exportJKFString(record))
 }
 
