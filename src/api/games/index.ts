@@ -191,6 +191,7 @@ app.openapi(
     if (dayjs(game.startTime).isBefore(dayjs().subtract(1, 'year')) && c.env.PLAN_ID <= 1) {
       throw new HTTPException(403, { message: 'Forbidden' })
     }
+    // 棋譜データがない場合にはそのまま返す
     if (game.kif === null) {
       const result = GameSchema.safeParse({
         ...game,
@@ -202,6 +203,7 @@ app.openapi(
       }
       return c.json(result.data, 200)
     }
+    // 棋譜データがあれば棋譜コメントを削除してから返す(著作権上の問題回避のため)
     const record: Record | Error = importJKFString(game.kif)
     if (record instanceof Error) {
       throw new HTTPException(500, { message: 'Failed to parse KIF data' })
