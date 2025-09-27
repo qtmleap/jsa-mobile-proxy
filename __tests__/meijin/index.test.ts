@@ -1,13 +1,20 @@
 import { describe, expect } from 'bun:test'
-import { doesNotThrow } from 'node:assert'
 import { it } from 'node:test'
 import { MeijinListStringSchema } from '@/models/meijin-list.dto'
-import { readJSONSync, readTextSync } from '../client'
+import { client, readJSONSync, readTextSync } from '../client'
 
 describe('Parse Text', () => {
   const text = readTextSync('meijin/meijin_all_game_list.txt')
-  it('Record Count', async () => {
-    doesNotThrow(() => MeijinListStringSchema.parse(text))
+  it('Parse', async () => {
+    const result = MeijinListStringSchema.safeParse(text)
+    expect(result.success).toBe(true)
+    console.log(result.data)
+  })
+})
+
+describe('Fetch List', () => {
+  it('Fetch', async () => {
+    const _result = await client.get('/list/meijin_all_game_list.txt')
   })
 })
 

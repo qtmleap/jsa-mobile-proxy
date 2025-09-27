@@ -10,7 +10,7 @@ import { GameJSONSchema } from '@/models/ai.dto'
 import { KIFSchema } from '@/models/kif.dto'
 import { endpoints } from '@/utils/client'
 
-const client = new Zodios('https://ip.jsamobile.jp', endpoints)
+export const client = new Zodios('https://ip.jsamobile.jp', endpoints)
 
 client.use('get', '/api/index.php', {
   name: 'ResponseType',
@@ -42,7 +42,6 @@ client.use('get', '/api/index.php', {
     }
   }
 })
-
 client.use('get', '/ai/:game_id:format', {
   name: 'BaseURL',
   async request(_, config) {
@@ -59,7 +58,29 @@ client.use('get', '/ai/:game_id:format', {
     }
   }
 })
-
+client.use('get', '/list/meijin_all_game_list.txt', {
+  name: 'Meijin Auth',
+  async request(_, config) {
+    return {
+      ...config,
+      auth: {
+        // biome-ignore lint/style/noNonNullAssertion: reason
+        username: process.env.JSA_MEIJIN_USERNAME!,
+        // biome-ignore lint/style/noNonNullAssertion: reason
+        password: process.env.JSA_MEIJIN_PASSWORD!
+      },
+      headers: {
+        'User-Agent': 'JsaLive/2 CFNetwork/3826.600.41 Darwin/24.6.0',
+        'Accept-Language': 'ja',
+        'Accept-Encoding': 'gzip, deflate, br',
+        Accept: '*/*'
+      },
+      withCredentials: true,
+      responseType: 'json',
+      baseURL: 'https://d31j6ipzjd5eeo.cloudfront.net'
+    }
+  }
+})
 client.use('get', '/pay/kif/meijinsen/:year/:month/:day/:rank/:game_id:format', {
   name: 'BaseURL',
   async request(_, config) {

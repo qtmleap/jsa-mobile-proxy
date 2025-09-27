@@ -2,6 +2,7 @@ import { makeApi, Zodios, type ZodiosInstance } from '@zodios/core'
 import z from 'zod'
 import { GameJSONSchema } from '@/models/ai.dto'
 import { KIFSchema } from '@/models/kif.dto'
+import { MeijinListStringSchema } from '@/models/meijin-list.dto'
 import { SearchRequestSchema } from '@/models/search.dto'
 import { GameResultWebhookRequestSchema } from '@/models/webhook.dto'
 import type { Env } from './bindings'
@@ -27,6 +28,12 @@ export const endpoints = makeApi([
   },
   {
     method: 'get',
+    path: '/ai/ai_game_list.txt',
+    parameters: [],
+    response: GameJSONSchema
+  },
+  {
+    method: 'get',
     path: '/ai/:game_id:format',
     parameters: [
       {
@@ -46,7 +53,7 @@ export const endpoints = makeApi([
     method: 'get',
     path: '/list/meijin_all_game_list.txt',
     parameters: [],
-    response: z.string().nonempty()
+    response: MeijinListStringSchema
   },
   {
     method: 'get',
@@ -164,14 +171,14 @@ export const createClient: ClientFactory = (env: Env) => {
       }
     }
   })
-  client.use('get', '/pay/kif/meijinsen/:year/:month/:day/:rank/:game_id:format', {
+  client.use('get', '/list/meijin_all_game_list.txt', {
     name: 'Meijin Auth',
     async request(_, config) {
       return {
         ...config,
         auth: {
-          username: env.JSA_AI_USERNAME,
-          password: env.JSA_AI_PASSWORD
+          username: env.JSA_MEIJIN_USERNAME,
+          password: env.JSA_MEIJIN_PASSWORD
         },
         headers: {
           'User-Agent': 'JsaLive/2 CFNetwork/3826.600.41 Darwin/24.6.0',
