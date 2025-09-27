@@ -25,7 +25,7 @@ const endpoints = makeApi([
   },
   {
     method: 'get',
-    path: '/api/:game_id',
+    path: '/api/:game_id.json',
     parameters: [
       {
         name: 'path',
@@ -85,7 +85,7 @@ export const createClient: ClientFactory = (env: Env) => {
       }
     }
   })
-  client.use('get', '/api/:game_id', {
+  client.use('get', '/api/:game_id.json', {
     name: 'ResponseType',
     async request(_, config) {
       return {
