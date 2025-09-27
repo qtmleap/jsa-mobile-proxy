@@ -1,4 +1,5 @@
 import { z } from '@hono/zod-openapi'
+import { TournamentList } from '@mito-shogi/tsshogi-jsa'
 import {
   exportJKFString,
   InitialPositionType,
@@ -96,13 +97,14 @@ const encodeJKF = (game: Game): any => {
     // 消費時間を追加
     record.current.setElapsedMs(kif.spend * 1000)
   }
+  const _tournament = TournamentList
   record.metadata.setStandardMetadata(RecordMetadataKey.TITLE, toNormalize(game.event))
+  record.metadata.setStandardMetadata(RecordMetadataKey.DATE, game.starttime)
   record.metadata.setStandardMetadata(RecordMetadataKey.TIME_LIMIT, game.timelimit)
   record.metadata.setStandardMetadata(RecordMetadataKey.BLACK_TIME_LIMIT, game.timelimit)
   record.metadata.setStandardMetadata(RecordMetadataKey.WHITE_TIME_LIMIT, game.timelimit)
   record.metadata.setStandardMetadata(RecordMetadataKey.LENGTH, (game.end_tesu - 1).toString())
   record.metadata.setStandardMetadata(RecordMetadataKey.STRATEGY, '')
-  record.metadata.setStandardMetadata(RecordMetadataKey.DATE, game.starttime)
   record.metadata.setStandardMetadata(RecordMetadataKey.START_DATETIME, game.starttime)
   record.metadata.setStandardMetadata(RecordMetadataKey.END_DATETIME, game.enddate)
   record.metadata.setStandardMetadata(RecordMetadataKey.PLACE, toNormalize(game.place))
