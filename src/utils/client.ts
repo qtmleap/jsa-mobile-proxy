@@ -1,5 +1,7 @@
 import { makeApi, Zodios, type ZodiosInstance } from '@zodios/core'
 import z from 'zod'
+import { GameJSONSchema } from '@/models/ai.dto'
+import { KIFSchema } from '@/models/kif.dto'
 import { SearchRequestSchema } from '@/models/search.dto'
 import { GameResultWebhookRequestSchema } from '@/models/webhook.dto'
 import type { Env } from './bindings'
@@ -10,7 +12,7 @@ export enum EventType {
   GAME_START = '対局開始'
 }
 
-const endpoints = makeApi([
+export const endpoints = makeApi([
   {
     method: 'get',
     path: '/api/index.php',
@@ -25,15 +27,66 @@ const endpoints = makeApi([
   },
   {
     method: 'get',
-    path: '/api/:game_id.json',
+    path: '/ai/:game_id:format',
     parameters: [
       {
-        name: 'path',
+        name: 'game_id',
         type: 'Path',
-        schema: z.string().uuid()
+        schema: z.number().int()
+      },
+      {
+        name: 'format',
+        type: 'Path',
+        schema: z.literal('.json').default('.json')
       }
     ],
-    response: z.object({})
+    response: GameJSONSchema
+  },
+  {
+    method: 'get',
+    path: '/pay/kif/meijinsen/:year/:month/:day/:rank/:game_id:format',
+    parameters: [
+      {
+        name: 'game_id',
+        type: 'Path',
+        schema: z.number().int()
+      },
+      {
+        name: 'year',
+        type: 'Path',
+        schema: z
+          .number()
+          .int()
+          .transform((v) => v.toString().padStart(2, '0'))
+      },
+      {
+        name: 'month',
+        type: 'Path',
+        schema: z
+          .number()
+          .int()
+          .transform((v) => v.toString().padStart(2, '0'))
+      },
+      {
+        name: 'day',
+        type: 'Path',
+        schema: z
+          .number()
+          .int()
+          .transform((v) => v.toString().padStart(2, '0'))
+      },
+      {
+        name: 'rank',
+        type: 'Path',
+        schema: z.enum(['M7', 'A', 'B1', 'B2', 'C1', 'C2'])
+      },
+      {
+        name: 'format',
+        type: 'Path',
+        schema: z.literal('.txt').default('.txt')
+      }
+    ],
+    response: KIFSchema
   },
   {
     method: 'post',
