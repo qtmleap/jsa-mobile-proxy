@@ -44,6 +44,12 @@ export const endpoints = makeApi([
   },
   {
     method: 'get',
+    path: '/list/meijin_all_game_list.txt',
+    parameters: [],
+    response: z.string().nonempty()
+  },
+  {
+    method: 'get',
     path: '/pay/kif/meijinsen/:year/:month/:day/:rank/:game_id:format',
     parameters: [
       {
@@ -138,8 +144,8 @@ export const createClient: ClientFactory = (env: Env) => {
       }
     }
   })
-  client.use('get', '/api/:game_id.json', {
-    name: 'ResponseType',
+  client.use('get', '/ai/:game_id:format', {
+    name: 'AI Auth',
     async request(_, config) {
       return {
         ...config,
@@ -148,6 +154,43 @@ export const createClient: ClientFactory = (env: Env) => {
           password: env.JSA_AI_PASSWORD
         },
         headers: {
+          'User-Agent': 'JsaLive/2 CFNetwork/3826.600.41 Darwin/24.6.0',
+          'Accept-Language': 'ja',
+          'Accept-Encoding': 'gzip, deflate, br',
+          Accept: '*/*'
+        },
+        withCredentials: true,
+        responseType: 'json'
+      }
+    }
+  })
+  client.use('get', '/pay/kif/meijinsen/:year/:month/:day/:rank/:game_id:format', {
+    name: 'Meijin Auth',
+    async request(_, config) {
+      return {
+        ...config,
+        auth: {
+          username: env.JSA_AI_USERNAME,
+          password: env.JSA_AI_PASSWORD
+        },
+        headers: {
+          'User-Agent': 'JsaLive/2 CFNetwork/3826.600.41 Darwin/24.6.0',
+          'Accept-Language': 'ja',
+          'Accept-Encoding': 'gzip, deflate, br',
+          Accept: '*/*'
+        },
+        withCredentials: true,
+        responseType: 'json'
+      }
+    }
+  })
+  client.use('get', '/pay/kif/meijinsen/:year/:month/:day/:rank/:game_id:format', {
+    name: 'ResponseType',
+    async request(_, config) {
+      return {
+        ...config,
+        headers: {
+          Cookie: `kisen_session=${env.MEIJIN_SESSION}`,
           'User-Agent': 'JsaLive/2 CFNetwork/3826.600.41 Darwin/24.6.0',
           'Accept-Language': 'ja',
           'Accept-Encoding': 'gzip, deflate, br',
