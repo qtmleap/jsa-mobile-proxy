@@ -11,5 +11,8 @@ const readJSONSync = (filePath: string): any => {
 }
 
 describe("Equality", () => {
+  const expected = readJSONSync("ip.jsamobile.jp/18440.json")
+  const received = readJSONSync("d2pngvm764jm.cloudfront.net/18440.json")
+
 
 })
