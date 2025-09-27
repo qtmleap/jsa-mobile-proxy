@@ -1,5 +1,19 @@
 import z from 'zod'
 
+export const KifSchema = z.object({
+  num: z.number(),
+  time: z.number(),
+  toX: z.union([z.number(), z.null()]),
+  toY: z.union([z.number(), z.null()]),
+  type: z.string(),
+  frX: z.union([z.number(), z.null()]),
+  frY: z.union([z.number(), z.null()]),
+  prmt: z.union([z.number(), z.null()]),
+  spend: z.number(),
+  move: z.string(),
+  _id: z.string()
+})
+
 export const GameSchema = z.object({
   _id: z.string(),
   modified_at: z.coerce.date(),
