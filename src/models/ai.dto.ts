@@ -105,7 +105,6 @@ const encodeJKF = (game: Game): any => {
   record.metadata.setStandardMetadata(RecordMetadataKey.PLACE, toNormalize(game.place))
   record.metadata.setStandardMetadata(RecordMetadataKey.BLACK_NAME, game.player1)
   record.metadata.setStandardMetadata(RecordMetadataKey.WHITE_NAME, game.player2)
-
   return JSON.parse(exportJKFString(record))
 }
 
