@@ -23,4 +23,7 @@ export interface Env {
   PLAN_ID_LITE: string
   PLAN_ID_BASIC: string
   BASE_URL: string
+  JSAM_QUEUE: Queue
+  AI_QUEUE: Queue
+  MEIJIN_QUEUE: Queue
 }
