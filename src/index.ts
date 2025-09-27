@@ -24,8 +24,9 @@ import search from './api/search'
 import tags from './api/tags'
 import type { Env } from './utils/bindings'
 import { createClient } from './utils/client'
-import scheduled from './utils/handler'
 import { reference, specification } from './utils/openapi'
+import queue from './utils/queue'
+import scheduled from './utils/scheduled'
 
 dayjs.extend(utc)
 dayjs.extend(timezone)
@@ -96,5 +97,6 @@ app.onError(async (error, c) => {
 export default {
   port: 28787,
   fetch: app.fetch,
-  scheduled: scheduled
+  scheduled: scheduled,
+  queue: queue
 }
