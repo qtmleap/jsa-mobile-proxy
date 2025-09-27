@@ -20,7 +20,7 @@
   },
   "devDependencies": {
     "@biomejs/biome": "^2.2.4",
-    "@cloudflare/workers-types": "^4.20250926.0",
+    "@cloudflare/workers-types": "^4.20250927.0",
     "@commitlint/cli": "^20.0.0",
     "@commitlint/config-conventional": "^20.0.0",
     "@commitlint/cz-commitlint": "^20.0.0",
@@ -38,14 +38,14 @@
   },
   "dependencies": {
     "@hono-rate-limiter/cloudflare": "^0.2.2",
-    "@mito-shogi/tsshogi-jsa": "^0.4.1",
+    "@mito-shogi/tsshogi-jsa": "^0.4.2",
     "@prisma/adapter-d1": "^6.16.2",
     "@prisma/client": "^6.16.2",
     "@zodios/core": "^10.9.6",
     "@zodios/plugins": "^10.6.0",
     "axios": "^1.12.2",
     "dayjs": "^1.11.18",
-    "hono": "^4.9.8",
+    "hono": "^4.9.9",
     "hono-rate-limiter": "^0.4.2",
     "tsshogi": "^2.1.0",
     "zod": "^4.1.11"
