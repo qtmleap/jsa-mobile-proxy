@@ -24,6 +24,18 @@ const endpoints = makeApi([
     response: z.instanceof(Buffer)
   },
   {
+    method: 'get',
+    path: '/api/:game_id',
+    parameters: [
+      {
+        name: 'path',
+        type: 'Path',
+        schema: z.string().uuid()
+      }
+    ],
+    response: z.object({})
+  },
+  {
     method: 'post',
     path: '/api/webhook/games',
     parameters: [
@@ -55,7 +67,7 @@ export const createClient: ClientFactory = (env: Env) => {
           password: env.JSA_MOBILE_PASSWORD
         },
         headers: {
-          'User-Agent': 'JsaLive/2 CFNetwork/3826.500.131 Darwin/24.5.0',
+          'User-Agent': 'JsaLive/2 CFNetwork/3826.600.41 Darwin/24.6.0',
           'Accept-Language': 'ja',
           'Accept-Encoding': 'gzip, deflate, br',
           Accept: '*/*'
@@ -70,6 +82,26 @@ export const createClient: ClientFactory = (env: Env) => {
             return data
           }
         ]
+      }
+    }
+  })
+  client.use('get', '/api/:game_id', {
+    name: 'ResponseType',
+    async request(_, config) {
+      return {
+        ...config,
+        auth: {
+          username: env.JSA_AI_USERNAME,
+          password: env.JSA_AI_PASSWORD
+        },
+        headers: {
+          'User-Agent': 'JsaLive/2 CFNetwork/3826.600.41 Darwin/24.6.0',
+          'Accept-Language': 'ja',
+          'Accept-Encoding': 'gzip, deflate, br',
+          Accept: '*/*'
+        },
+        withCredentials: true,
+        responseType: 'json'
       }
     }
   })
