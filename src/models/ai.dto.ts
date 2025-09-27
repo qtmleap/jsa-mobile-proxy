@@ -20,7 +20,7 @@ export const KifSchema = z.object({
 })
 
 // biome-ignore lint/suspicious/noExplicitAny: reason
-const encodeJKF = (game: Game): any => {
+export const encodeJKF = (game: AIGame): any => {
   const position: Position = (() => {
     if (game.handicap === '平手') {
       // biome-ignore lint/style/noNonNullAssertion: ignore
@@ -96,7 +96,7 @@ const encodeJKF = (game: Game): any => {
   return JSON.parse(exportJKFString(record))
 }
 
-export const GameSchema = z.object({
+export const AIGameSchema = z.object({
   _id: z.string(),
   modified_at: z.coerce.date(),
   gametype: z.string(),
@@ -139,10 +139,13 @@ export const GameSchema = z.object({
   lunchtime_start_2: z.string(),
   modified_by: z.string(),
   enddate: z.string(),
-  kif: z.array(KifSchema),
-  breaktime: z.array(z.any())
+  kif: z.array(KifSchema)
+  // breaktime: z.array(z.any())
 })
 
-export const GameJSONSchema = z.array(GameSchema.transform(encodeJKF).pipe(JKFSchema))
+export type AIGame = z.infer<typeof AIGameSchema>
 
-export type Game = z.infer<typeof GameSchema>
+export const GameJSONSchema = z
+  .array(AIGameSchema.transform(encodeJKF))
+  .transform((arr) => arr[0])
+  .pipe(JKFSchema)

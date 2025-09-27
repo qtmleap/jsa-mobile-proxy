@@ -1,11 +1,14 @@
 import { makeApi, Zodios, type ZodiosInstance } from '@zodios/core'
+import * as iconv from 'iconv-lite'
+import { exportJKFString, importKIF, type Record } from 'tsshogi'
 import z from 'zod'
-import { GameJSONSchema } from '@/models/ai.dto'
-import { KIFSchema } from '@/models/kif.dto'
+import { AIGameSchema, encodeJKF, GameJSONSchema } from '@/models/ai.dto'
+import { JKFSchema } from '@/models/jkf.dto'
 import { MeijinListStringSchema } from '@/models/meijin-list.dto'
 import { SearchRequestSchema } from '@/models/search.dto'
 import { GameResultWebhookRequestSchema } from '@/models/webhook.dto'
 import type { Env } from './bindings'
+import { toNormalize } from './normalize'
 
 export enum EventType {
   TODAY = '対局日',
@@ -47,7 +50,10 @@ export const endpoints = makeApi([
         schema: z.literal('.json').default('.json')
       }
     ],
-    response: GameJSONSchema
+    response: z
+      .array(AIGameSchema.transform(encodeJKF))
+      .transform((arr) => arr[0])
+      .pipe(JKFSchema)
   },
   {
     method: 'get',
@@ -99,7 +105,17 @@ export const endpoints = makeApi([
         schema: z.literal('.txt').default('.txt')
       }
     ],
-    response: KIFSchema
+    response: z
+      .string()
+      .nonempty()
+      .transform((v) => {
+        const record: Record | Error = importKIF(v)
+        if (record instanceof Error) {
+          throw new Error('Failed to parse KIF')
+        }
+        return JSON.parse(toNormalize(exportJKFString(record)))
+      })
+      .pipe(JKFSchema)
   },
   {
     method: 'post',
@@ -167,7 +183,28 @@ export const createClient: ClientFactory = (env: Env) => {
           Accept: '*/*'
         },
         withCredentials: true,
-        responseType: 'json'
+        responseType: 'json',
+        baseURL: 'https://d2pngvm764jm.cloudfront.net'
+      }
+    }
+  })
+  client.use('get', '/ai/ai_game_list.txt', {
+    name: 'AI Auth',
+    async request(_, config) {
+      return {
+        ...config,
+        auth: {
+          username: env.JSA_AI_USERNAME,
+          password: env.JSA_AI_PASSWORD
+        },
+        headers: {
+          'User-Agent': 'JsaLive/2 CFNetwork/3826.600.41 Darwin/24.6.0',
+          'Accept-Language': 'ja',
+          'Accept-Encoding': 'gzip, deflate, br',
+          Accept: '*/*'
+        },
+        withCredentials: true,
+        baseURL: 'https://d2pngvm764jm.cloudfront.net'
       }
     }
   })
@@ -187,6 +224,7 @@ export const createClient: ClientFactory = (env: Env) => {
           Accept: '*/*'
         },
         withCredentials: true,
+        baseURL: 'https://d31j6ipzjd5eeo.cloudfront.net',
         responseType: 'json'
       }
     }
@@ -204,7 +242,12 @@ export const createClient: ClientFactory = (env: Env) => {
           Accept: '*/*'
         },
         withCredentials: true,
-        responseType: 'json'
+        baseURL: 'https://member.meijinsen.jp',
+        transformResponse: [
+          (data) => {
+            return iconv.decode(Buffer.from(data), 'shift_jis')
+          }
+        ]
       }
     }
   })
