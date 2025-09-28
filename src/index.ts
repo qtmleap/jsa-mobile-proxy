@@ -1,3 +1,4 @@
+import { WorkerEntrypoint } from 'cloudflare:workers'
 import { OpenAPIHono as Hono } from '@hono/zod-openapi'
 import { PrismaD1 } from '@prisma/adapter-d1'
 import { PrismaClient } from '@prisma/client'
@@ -95,6 +96,20 @@ app.onError(async (error, c) => {
   console.error(error.name)
   return c.json({ message: error.message }, 500)
 })
+
+export class PrismaService extends WorkerEntrypoint<Env> {
+  getGames() {
+    const adapter = new PrismaD1(this.env.DB)
+    const prisma = new PrismaClient({ adapter })
+    return prisma.game.findMany()
+  }
+
+  getPlayers() {
+    const adapter = new PrismaD1(this.env.DB)
+    const prisma = new PrismaClient({ adapter })
+    return prisma.player.findMany()
+  }
+}
 
 export default {
   port: 28787,

@@ -25,8 +25,8 @@ workers_dev = true
 preview_urls = true
 minify = false
 routes = [
-  { pattern = "jsam-dev.qleap.jp/api/*", custom_domain = false },
-  { pattern = "jsam-dev.qleap.jp/openapi.json", custom_domain = false },
+  # { pattern = "jsam-dev.qleap.jp/api/*", custom_domain = false },
+  # { pattern = "jsam-dev.qleap.jp/openapi.json", custom_domain = false },
 ]
 
 [env.prod.vars]
