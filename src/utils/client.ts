@@ -59,7 +59,14 @@ export const endpoints = makeApi([
     method: 'get',
     path: '/list/meijin_all_game_list.txt',
     parameters: [],
-    response: z.string().transform(decodeMeijinList).pipe(z.array(MeijinListSchema))
+    response: z
+      .string()
+      .transform(decodeMeijinList)
+      .pipe(
+        z.object({
+          games: z.array(MeijinListSchema)
+        })
+      )
   },
   {
     method: 'get',
