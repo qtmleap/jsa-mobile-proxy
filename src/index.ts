@@ -156,7 +156,6 @@ export class PrismaService extends WorkerEntrypoint<Env> {
 
 export default {
   port: 28787,
-  fetch: app.fetch,
   scheduled: scheduled,
   queue: queue
 }
