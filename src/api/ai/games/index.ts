@@ -46,7 +46,7 @@ app.openapi(
     description: 'Get Game Details',
     request: {
       params: z.object({
-        game_id: z.string().transform((v) => parseInt(v, 10))
+        game_id: z.coerce.number().int()
       })
     },
     responses: {
