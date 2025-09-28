@@ -1,4 +1,4 @@
+import { z } from '@hono/zod-openapi'
 import { Tournament } from '@mito-shogi/tsshogi-jsa'
-import z from 'zod'
 
-export const TournamentEnum = z.nativeEnum(Tournament).openapi('TournamentEnum')
+export const TournamentEnum = z.enum(Tournament).openapi('TournamentEnum')
