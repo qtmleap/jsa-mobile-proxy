@@ -60,12 +60,15 @@ export type Game = z.infer<typeof GameSchema>
 
 export const GameRequestParamsSchema = z
   .object({
-    game_id: z.coerce.number().int().openapi({
+    game_id: z.number().int().openapi({
       description: '対局ID',
       example: 100
-    })
+    }),
+    plan_id: z.number().int()
   })
   .openapi('GameRequestParamsSchema')
+
+export type GameRequestParams = z.infer<typeof GameRequestParamsSchema>
 
 export const GameRequestQuerySchema = z
   .object({
