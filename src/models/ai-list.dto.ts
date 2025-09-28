@@ -89,7 +89,9 @@ export const encodeJKF = (game: AIGame): any => {
     record.metadata.setStandardMetadata(RecordMetadataKey.TOURNAMENT, tournament)
   }
   record.metadata.setStandardMetadata(RecordMetadataKey.STRATEGY, '')
-  record.metadata.setStandardMetadata(RecordMetadataKey.END_DATETIME, dayjs(game.endtime).format('YYYY/MM/DD HH:mm:ss'))
+  if (game.endtime !== undefined) {
+    record.metadata.setStandardMetadata(RecordMetadataKey.END_DATETIME, dayjs(game.endtime).format('YYYY/MM/DD HH:mm:ss'))
+  }
   record.metadata.setStandardMetadata(RecordMetadataKey.PLACE, toNormalize(game.place))
   record.metadata.setStandardMetadata(RecordMetadataKey.BLACK_NAME, game.player2)
   record.metadata.setStandardMetadata(RecordMetadataKey.WHITE_NAME, game.player1)
@@ -109,7 +111,8 @@ export const AIGameSchema = z.object({
   place: z.string(),
   starttime: z.string(),
   realstarttime: z.number(),
-  endtime: z.coerce.date(),
+  // biome-ignore lint/suspicious/noExplicitAny: reason
+  endtime: z.preprocess((input: any) => (input.length === 0 ? undefined : input), z.coerce.date().optional()),
   timelimit: z.string(),
   countdown: z.string(),
   spendtime_p1: z.string(),
