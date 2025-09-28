@@ -58,12 +58,8 @@ describe('Parse Meijin Game List', () => {
 
 describe('Fetch Meijin Game List', () => {
   it('Fetch', async () => {
-    const result = MeijinListStringSchema.safeParse(await client.get('/list/meijin_all_game_list.txt'))
-    expect(result.success).toBe(true)
-    if (!result.success) {
-      throw new Error('Failed to parse Meijin game list')
-    }
-    expect(result.data.games.length).toBeGreaterThanOrEqual(13461)
+    const result = await client.get('/list/meijin_all_game_list.txt')
+    expect(result.games.length).toBeGreaterThanOrEqual(13461)
   })
 })
 

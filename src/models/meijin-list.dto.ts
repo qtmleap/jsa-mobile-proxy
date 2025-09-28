@@ -43,8 +43,11 @@ const toNormalizeDate = (input: string): string => {
 export const MeijinListSchema = z.object({
   game_id: z.coerce.number().int(),
   meijin_id: z.coerce.number().int(),
-  // biome-ignore lint/suspicious/noExplicitAny: reason
-  tablet_id: z.preprocess((input: any) => (input === undefined ? undefined : input.length === 0 ? undefined : input), z.string().nonempty().optional()),
+  tablet_id: z.preprocess(
+    // biome-ignore lint/suspicious/noExplicitAny: reason
+    (input: any) => (input === undefined || input === null ? undefined : input.length === 0 ? undefined : input),
+    z.string().nonempty().optional()
+  ),
   kif_key: z.string().nonempty(),
   // modified: z.coerce
   //   .number()
@@ -52,12 +55,12 @@ export const MeijinListSchema = z.object({
   //   .transform((v) => dayjs(v * 1000).format('YYYY-MM-DD HH:mm')),
   start_date: z.preprocess(
     // biome-ignore lint/suspicious/noExplicitAny: reason
-    (input: any) => (input === undefined ? undefined : input.length === 0 ? undefined : toNormalizeDate(input)),
+    (input: any) => (input === undefined || input === null ? undefined : input.length === 0 ? undefined : toNormalizeDate(input)),
     z.coerce.date().optional()
   ),
   end_date: z.preprocess(
     // biome-ignore lint/suspicious/noExplicitAny: reason
-    (input: any) => (input === undefined ? undefined : input.length === 0 ? undefined : toNormalizeDate(input)),
+    (input: any) => (input === undefined || input === null ? undefined : input.length === 0 ? undefined : toNormalizeDate(input)),
     z.coerce.date().optional()
   ),
   kisen: z.string().nonempty(),
@@ -71,14 +74,23 @@ export const MeijinListSchema = z.object({
   name2: z.string().nonempty().optional(),
   title2: z.string().nonempty().optional(),
   // biome-ignore lint/suspicious/noExplicitAny: reason
-  senkei: z.preprocess((input: any) => (input === undefined ? undefined : input.length === 0 ? undefined : input), z.string().nonempty().optional()),
+  senkei: z.preprocess(
+    (input: any) => (input === undefined || input === null ? undefined : input.length === 0 ? undefined : input),
+    z.string().nonempty().optional()
+  ),
   result: z.coerce.number().int(),
   winner: z.coerce.number().int(),
   tesuu: z.coerce.number().int(),
   // biome-ignore lint/suspicious/noExplicitAny: reason
-  sente_score: z.preprocess((input: any) => (input === undefined ? undefined : input.length === 0 ? undefined : input), z.string().nonempty().optional()),
+  sente_score: z.preprocess(
+    (input: any) => (input === undefined || input === null ? undefined : input.length === 0 ? undefined : input),
+    z.string().nonempty().optional()
+  ),
   // biome-ignore lint/suspicious/noExplicitAny: reason
-  gote_score: z.preprocess((input: any) => (input === undefined ? undefined : input.length === 0 ? undefined : input), z.string().nonempty().optional())
+  gote_score: z.preprocess(
+    (input: any) => (input === undefined || input === null ? undefined : input.length === 0 ? undefined : input),
+    z.string().nonempty().optional()
+  )
 })
 
 export const MeijinListStringSchema = z
