@@ -4,7 +4,7 @@ import { exportJKFString, importKIF, type Record } from 'tsshogi'
 import z from 'zod'
 import { AIGameSchema, AIListSchema, encodeJKF } from '@/models/ai-list.dto'
 import { JKFSchema } from '@/models/jkf.dto'
-import { decodeMeijinList, MeijinListSchema } from '@/models/meijin-list.dto'
+import { decodeMeijinList, MeijinGameStringSchema, MeijinListSchema } from '@/models/meijin-list.dto'
 import { SearchRequestSchema } from '@/models/search.dto'
 import { GameResultWebhookRequestSchema } from '@/models/webhook.dto'
 import type { Env } from './bindings'
@@ -183,8 +183,29 @@ export const createClient: ClientFactory = (env: Env) => {
           Accept: '*/*'
         },
         withCredentials: true,
-        responseType: 'json',
-        baseURL: 'https://d2pngvm764jm.cloudfront.net'
+        responseType: 'arraybuffer',
+        baseURL: 'https://d2pngvm764jm.cloudfront.net',
+        transformResponse: [
+          (data) => {
+            return iconv.decode(Buffer.from(data), 'utf8')
+          }
+        ]
+      }
+    },
+    async response(_api, _config, res) {
+      console.log(res.data)
+      try {
+        return {
+          ...res,
+          data: z
+            .array(AIGameSchema.transform(encodeJKF))
+            .transform((arr) => arr[0])
+            .pipe(JKFSchema)
+            .parse(JSON.parse(res.data))
+        }
+      } catch (error) {
+        console.error(error)
+        throw error
       }
     }
   })
@@ -205,6 +226,12 @@ export const createClient: ClientFactory = (env: Env) => {
         },
         withCredentials: true,
         baseURL: 'https://d2pngvm764jm.cloudfront.net'
+      }
+    },
+    async response(_api, _config, res) {
+      return {
+        ...res,
+        data: AIListSchema.parse(res.data)
       }
     }
   })
@@ -232,6 +259,12 @@ export const createClient: ClientFactory = (env: Env) => {
           }
         ]
       }
+    },
+    async response(_api, _config, res) {
+      return {
+        ...res,
+        data: res.data
+      }
     }
   })
   client.use('get', '/pay/kif/meijinsen/:year/:month/:day/:rank/:game_id:format', {
@@ -248,11 +281,18 @@ export const createClient: ClientFactory = (env: Env) => {
         },
         withCredentials: true,
         baseURL: 'https://member.meijinsen.jp',
+        responseType: 'arraybuffer',
         transformResponse: [
           (data) => {
             return iconv.decode(Buffer.from(data), 'shift_jis')
           }
         ]
+      }
+    },
+    async response(_api, _config, res) {
+      return {
+        ...res,
+        data: MeijinGameStringSchema.parse(res.data)
       }
     }
   })

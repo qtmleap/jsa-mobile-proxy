@@ -69,7 +69,7 @@ describe('Fetch Meijin Game List', () => {
 
 describe('Fetch Meijin Game', () => {
   it('第83期名人戦七番勝負第1局', async () => {
-    const data = await client.get('/pay/kif/meijinsen/:year/:month/:day/:rank/:game_id:format', {
+    const result = await client.get('/pay/kif/meijinsen/:year/:month/:day/:rank/:game_id:format', {
       params: {
         year: 2025,
         month: 4,
@@ -79,10 +79,6 @@ describe('Fetch Meijin Game', () => {
         format: '.txt'
       }
     })
-    const result = MeijinGameStringSchema.safeParse(data)
-    expect(result.success).toBe(true)
-    if (!result.success) {
-      throw new Error('Failed to parse Meijin game')
-    }
+    expect(result.moves.length).toBe(136)
   })
 })

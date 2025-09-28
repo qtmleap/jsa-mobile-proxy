@@ -21,7 +21,7 @@ app.openapi(
   createRoute({
     method: 'get',
     path: '/',
-    tags: ['Games'],
+    tags: ['JSAM'],
     middleware: [
       cache({
         cacheName: 'games',
@@ -106,9 +106,7 @@ app.openapi(
       })
     ])
 
-    const result = ListSchema(GameSchema).safeParse(
-      games.map((game) => ({ ...game, tags: game.tags.map((tag) => tag.name) }))
-    )
+    const result = ListSchema(GameSchema).safeParse(games.map((game) => ({ ...game, tags: game.tags.map((tag) => tag.name) })))
     if (!result.success) {
       throw result.error
     }
@@ -129,7 +127,7 @@ app.openapi(
   createRoute({
     method: 'get',
     path: '/:game_id',
-    tags: ['Games'],
+    tags: ['JSAM'],
     middleware: [authJWT],
     summary: 'Get Game Details',
     description: 'Get Game Details',
