@@ -4,7 +4,7 @@ import { exportJKFString, importKIF, type Record } from 'tsshogi'
 import z from 'zod'
 import { AIGameSchema, AIListSchema, encodeJKF } from '@/models/ai-list.dto'
 import { JKFSchema } from '@/models/jkf.dto'
-import { decodeMeijinList, MeijinGameStringSchema, MeijinListSchema } from '@/models/meijin-list.dto'
+import { decodeMeijinList, MeijinGameStringSchema, MeijinListSchema, MeijinListStringSchema } from '@/models/meijin-list.dto'
 import { SearchRequestSchema } from '@/models/search.dto'
 import { GameResultWebhookRequestSchema } from '@/models/webhook.dto'
 import type { Env } from './bindings'
@@ -263,7 +263,7 @@ export const createClient: ClientFactory = (env: Env) => {
     async response(_api, _config, res) {
       return {
         ...res,
-        data: res.data
+        data: MeijinListStringSchema.parse(res.data)
       }
     }
   })
