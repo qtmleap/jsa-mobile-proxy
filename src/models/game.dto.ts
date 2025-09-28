@@ -95,3 +95,5 @@ export const GameRequestQuerySchema = z
     })
   })
   .openapi('GameRequestQuerySchema')
+
+export type GameRequestQuery = z.infer<typeof GameRequestQuerySchema>
