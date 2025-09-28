@@ -1,7 +1,7 @@
 import { WorkerEntrypoint } from 'cloudflare:workers'
 import { OpenAPIHono as Hono } from '@hono/zod-openapi'
 import { PrismaD1 } from '@prisma/adapter-d1'
-import { PrismaClient } from '@prisma/client'
+import { type Game, PrismaClient } from '@prisma/client'
 import { Scalar } from '@scalar/hono-api-reference'
 import dayjs from 'dayjs'
 import isToday from 'dayjs/plugin/isToday'
@@ -24,6 +24,8 @@ import meijin from './api/meijin/games'
 import players from './api/players'
 import search from './api/search'
 import tags from './api/tags'
+import { ListSchema } from './models/common.dto'
+import { type GameRequestQuery, GameSchema } from './models/game.dto'
 import type { Env } from './utils/bindings'
 import { createClient } from './utils/client'
 import { reference, specification } from './utils/openapi'
@@ -98,16 +100,74 @@ app.onError(async (error, c) => {
 })
 
 export class PrismaService extends WorkerEntrypoint<Env> {
-  getGames() {
+  async getGames(params: GameRequestQuery): Promise {
     const adapter = new PrismaD1(this.env.DB)
     const prisma = new PrismaClient({ adapter })
-    return prisma.game.findMany()
+    const { page, limit, tournament, startTime, endTime, player } = params
+    const condition = {
+      ...(startTime || endTime
+        ? {
+            startTime: {
+              ...(startTime && { gte: startTime }),
+              ...(endTime && { lte: endTime })
+            }
+          }
+        : {}),
+      tournament: {
+        equals: tournament
+      },
+      ...(player
+        ? {
+            OR: [{ blackId: player }, { whiteId: player }]
+          }
+        : {})
+    }
+    const [games, count] = await Promise.all([
+      prisma.game.findMany({
+        orderBy: { startTime: 'desc' },
+        take: limit,
+        skip: (page - 1) * limit,
+        select: {
+          id: true,
+          moves: true,
+          title: true,
+          startTime: true,
+          endTime: true,
+          blackId: true,
+          whiteId: true,
+          timeLimit: true,
+          tournament: true,
+          location: true,
+          tags: true
+        },
+        where: condition
+      }),
+      prisma.game.count({
+        where: condition
+      })
+    ])
+    const result = ListSchema(GameSchema).safeParse(games.map((game) => ({ ...game, tags: game.tags.map((tag) => tag.name) })))
+    if (!result.success) {
+      throw result.error
+    }
+    return {
+      results: result.data,
+      count: count,
+      page: page,
+      limit: limit
+    }
   }
 
-  getPlayers() {
+  async getPlayers() {
     const adapter = new PrismaD1(this.env.DB)
     const prisma = new PrismaClient({ adapter })
-    return prisma.player.findMany()
+    const players = await prisma.player.findMany()
+    return {
+      results: players,
+      count: players.length,
+      page: 1,
+      limit: players.length
+    }
   }
 }
 
