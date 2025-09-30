@@ -1,5 +1,4 @@
-import { beforeEach, describe, expect } from 'bun:test'
-import { it } from 'node:test'
+import { beforeEach, describe, expect, it } from 'bun:test'
 import { importJKF, type Record, RecordMetadataKey } from 'tsshogi'
 import { AIGameJSONSchema, AIListSchema } from '@/models/ai-list.dto'
 import { client, readJSONSync, readTextSync } from '../client'
