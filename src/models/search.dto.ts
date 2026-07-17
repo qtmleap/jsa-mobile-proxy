@@ -16,9 +16,7 @@ export const SearchGameRequestSchema = z
   })
   .openapi('SearchGameRequestSchema')
 
-export const SearchRequestSchema = z
-  .discriminatedUnion('action', [SearchListRequestSchema, SearchGameRequestSchema])
-  .openapi('SearchRequestSchema')
+export const SearchRequestSchema = z.discriminatedUnion('action', [SearchListRequestSchema, SearchGameRequestSchema]).openapi('SearchRequestSchema')
 
 export const SearchItemPlayerSchema = z
   .object({
