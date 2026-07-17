@@ -30,9 +30,7 @@ export const GetFinishedGameList = async (env: Env): Promise<Game[]> => {
       }
     })
   ).map((game) => game.id)
-  return outputs
-    .map((result) => inputs.find((input) => input.game_id === result))
-    .filter((game): game is Game => game !== undefined)
+  return outputs.map((result) => inputs.find((input) => input.game_id === result)).filter((game): game is Game => game !== undefined)
 }
 
 export const GetGameList = async (env: Env, params: { p1: number; p2: number; p3: number }): Promise<Game[]> => {
@@ -58,10 +56,7 @@ export const GetGameList = async (env: Env, params: { p1: number; p2: number; p3
  * @param params
  * @returns
  */
-export const GetGameBufferList = async (
-  env: Env,
-  params: { p1: number; p2: number; p3: number }
-): Promise<GameBuffer[]> => {
+export const GetGameBufferList = async (env: Env, params: { p1: number; p2: number; p3: number }): Promise<GameBuffer[]> => {
   const { games } = decodeGameList(
     await env.CLIENT.get('/api/index.php', {
       queries: {

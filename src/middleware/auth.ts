@@ -7,8 +7,7 @@ import type { Env } from '../utils/bindings'
 // オプショナル JWT認証 (JWTがない場合はゲスト扱い)
 export const authJWT: MiddlewareHandler<{ Bindings: Env }> = async (c, next) => {
   // クッキーまたはAuthorizationヘッダーからJWTを取得
-  const token: string | undefined =
-    getCookie(c, 'access_token') || c.req.header('Authorization')?.replace('Bearer ', '')
+  const token: string | undefined = getCookie(c, 'access_token') || c.req.header('Authorization')?.replace('Bearer ', '')
   if (token !== undefined) {
     const payload = JWTPayloadSchema.parse(await verify(token, c.env.JWT_SECRET_KEY, 'HS256'))
     const pid: number = (() => {
