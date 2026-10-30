@@ -1,6 +1,6 @@
-## JSA Mobile Proxy
+# JSA Mobile Proxy (jsa-mobile-proxy)
 
-将棋連盟ライブ中継アプリからバイナリ化された棋譜データを取得して復号しJKF形式で返すAPIです.
+将棋連盟ライブ中継アプリからバイナリ化された棋譜データを取得して復号し、JKF 形式で返す API です。
 
 [定期実行](http://localhost:28787/__scheduled?cron=*+*+*+*+*)
 
@@ -26,26 +26,26 @@
 
 ## 対応棋戦
 
-以下の棋戦のうち, [将棋連盟ライブ中継アプリ](https://www.shogi.or.jp/lp/mr201704/)で観戦できる対局データを取得できます.
+以下の棋戦のうち、[将棋連盟ライブ中継アプリ](https://www.shogi.or.jp/lp/mr201704/)で観戦できる対局データを取得できます.
 
 > 対局データの取得には将棋連盟ライブ中継アプリの有料会員の契約が必要です
 
 ### データソース
 
-- Cloudfront
+- CloudFront
   - [対局情報一覧](https://d2pngvm764jm.cloudfront.net/ai/ai_game_list.txt)
   - [対局情報詳細](https://d2pngvm764jm.cloudfront.net/ai/17361.json)
 - 日本将棋連盟ライブ中継アプリ
   - [対局情報一覧](https://ip.jsamobile.jp/api/index.php?action=search&p3=3&p1=0&p2=1400)
   - [対局情報詳細](https://ip.jsamobile.jp/api/index.php?action=shogi&p1=17361)
 - 名人戦棋譜速報
-  - [対局情報詳細(サンプル)](https://www.meijinsen.jp/sample_kj/10752.txt?gyoku=3?1725419475165)
+  - [対局情報詳細 (サンプル)](https://www.meijinsen.jp/sample_kj/10752.txt?gyoku=3?1725419475165)
 
 #### 棋譜数
 
 | プラットフォーム             | 棋譜数     | 形式     |
 | :--------------------------: | :--------: | :------: |
-| Cloudfront                   | 5347       | JSON     |
+| CloudFront                   | 5347       | JSON     |
 | 日本将棋連盟ライブ中継アプリ | 867(19137) | バイナリ |
 | 名人戦棋譜速報               | 不明       | 不明     |
 
